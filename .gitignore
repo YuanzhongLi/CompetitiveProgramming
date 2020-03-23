@@ -5,4 +5,6 @@
 /**/testcase.txt
 /**/file.dSYM/
 .DS_Store
-
+/**/.DS_Store
+GoogleCodeJam/**/*.in
+GoogleCodeJam/**/*.out
