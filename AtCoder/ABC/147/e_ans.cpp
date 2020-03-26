@@ -3,7 +3,6 @@ using namespace std;
 
 #define rep(i,s,n) for (int i = (int)s; i < (int)n; i++)
 #define ll long long
-#define ld long double
 #define pb push_back
 #define eb emplace_back
 #define All(x) x.begin(), x.end()
@@ -17,22 +16,9 @@ using namespace std;
 #define Decimal(x) printf("%.10f\n", x) // 小数点を10桁まで表示
 // debug用
 #define PrintVec(x) for (auto elementPrintVec: x) { cout << elementPrintVec << " "; } cout << endl;
-#define debug(x) cerr << #x << ": " << (x) << "\n";
 
 typedef pair<int, int> PI;
 typedef pair<ll, ll> PLL;
-typedef vector<int> vi;
-typedef vector<vector<int>> vvi;
-typedef vector<vector<vector<int>>> vvvi;
-typedef vector<ll> vl;
-typedef vector<vector<ll>> vvl;
-typedef vector<vector<vector<int>>> vvvl;
-typedef vector<PI> vpi;
-typedef vector<vector<PI>> vvpi;
-typedef vector<vector<vector<PI>>> vvvpi;
-typedef vector<PLL> vpl;
-typedef vector<vector<PLL>> vvpl;
-typedef vector<vector<vector<PLL>>> vvvpl;
 
 int POWINT(int x, int n) {
   int ret = 1;
@@ -40,7 +26,7 @@ int POWINT(int x, int n) {
   return ret;
 };
 
-ll POWLL(ll x, int n) {
+ll POWLL(int x, int n) {
   ll ret = 1;
   rep(i, 0, n) ret *= x;
   return ret;
@@ -64,9 +50,56 @@ inline bool chmin(T &a, T b) {
   return false;
 };
 
+const int D = 80*160 + 10;
+const int D2 = D*2;
+typedef bitset<D2> bs;
+
+int a[100][100];
+bs dp[90][90];
+
 int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
+  int h, w;
+  cin >> h >> w;
+  rep(i, 0, h) {
+    rep(j, 0, w) {
+      int x;
+      cin >> x;
+      a[i][j] = x;
+    }
+  }
+  rep(i, 0, h) {
+    rep(j, 0, w) {
+      int y;
+      cin >> y;
+      a[i][j] = abs(a[i][j] - y);
+    }
+  }
+
+  dp[0][0][D-a[0][0]] = 1;
+  dp[0][0][D+a[0][0]] = 1;
+  rep(i, 0, h) {
+    rep(j, 0, w) {
+      if (i) {
+        dp[i][j] |= dp[i-1][j] << a[i][j];
+        dp[i][j] |= dp[i-1][j] >> a[i][j];
+      }
+      if (j) {
+        dp[i][j] |= dp[i][j-1] << a[i][j];
+        dp[i][j] |= dp[i][j-1] >> a[i][j];
+      }
+    }
+  }
+
+  int ans = D2;
+  rep(i, 0, D2) {
+    if (dp[h-1][w-1][i]) {
+      ans = min(ans, abs(i - D));
+    }
+  }
+
+  cout << ans << endl;
 
   return 0;
 };

@@ -3,7 +3,6 @@ using namespace std;
 
 #define rep(i,s,n) for (int i = (int)s; i < (int)n; i++)
 #define ll long long
-#define ld long double
 #define pb push_back
 #define eb emplace_back
 #define All(x) x.begin(), x.end()
@@ -17,22 +16,9 @@ using namespace std;
 #define Decimal(x) printf("%.10f\n", x) // 小数点を10桁まで表示
 // debug用
 #define PrintVec(x) for (auto elementPrintVec: x) { cout << elementPrintVec << " "; } cout << endl;
-#define debug(x) cerr << #x << ": " << (x) << "\n";
 
 typedef pair<int, int> PI;
 typedef pair<ll, ll> PLL;
-typedef vector<int> vi;
-typedef vector<vector<int>> vvi;
-typedef vector<vector<vector<int>>> vvvi;
-typedef vector<ll> vl;
-typedef vector<vector<ll>> vvl;
-typedef vector<vector<vector<int>>> vvvl;
-typedef vector<PI> vpi;
-typedef vector<vector<PI>> vvpi;
-typedef vector<vector<vector<PI>>> vvvpi;
-typedef vector<PLL> vpl;
-typedef vector<vector<PLL>> vvpl;
-typedef vector<vector<vector<PLL>>> vvvpl;
 
 int POWINT(int x, int n) {
   int ret = 1;
@@ -40,7 +26,7 @@ int POWINT(int x, int n) {
   return ret;
 };
 
-ll POWLL(ll x, int n) {
+ll POWLL(int x, int n) {
   ll ret = 1;
   rep(i, 0, n) ret *= x;
   return ret;
@@ -67,6 +53,53 @@ inline bool chmin(T &a, T b) {
 int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
+
+  int n, m, k;
+  cin >> n >> m >> k;
+  vector<PI> s(k);
+  vector<PI> e(k);
+  int maup = 0;
+  int madown = 0;
+  int maright = 0;
+  int maleft = 0;
+  int x, y;
+  rep(i, 0, k) {
+    cin >> x >> y;
+    s[i] = make_pair(x, y);
+  }
+  rep(i, 0, k) {
+    cin >> x >> y;
+    e[i] = make_pair(x, y);
+  }
+  int sx, sy, ex, ey;
+  rep(i, 0, k) {
+    sx = s[i].first;
+    sy = s[i].second;
+    ex = e[i].first;
+    ey = e[i].second;
+  }
+
+  string ans = "";
+  rep(i, 0, n-1) {
+    ans += "D";
+  }
+  rep(i, 0, m-1) {
+    ans += "L";
+  }
+  rep(i, 0, m) {
+    if (i % 2 == 0) {
+      rep(j, 0, n-1) {
+        ans += "U";
+      }
+    } else {
+      rep(j, 0, n-1) {
+        ans += "D";
+      }
+    }
+    ans += "R";
+  }
+  cout << (int)ans.length() << endl;
+  cout << ans << endl;
 
   return 0;
 };

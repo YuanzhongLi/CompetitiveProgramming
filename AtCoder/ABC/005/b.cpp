@@ -3,7 +3,6 @@ using namespace std;
 
 #define rep(i,s,n) for (int i = (int)s; i < (int)n; i++)
 #define ll long long
-#define ld long double
 #define pb push_back
 #define eb emplace_back
 #define All(x) x.begin(), x.end()
@@ -17,22 +16,9 @@ using namespace std;
 #define Decimal(x) printf("%.10f\n", x) // 小数点を10桁まで表示
 // debug用
 #define PrintVec(x) for (auto elementPrintVec: x) { cout << elementPrintVec << " "; } cout << endl;
-#define debug(x) cerr << #x << ": " << (x) << "\n";
 
 typedef pair<int, int> PI;
 typedef pair<ll, ll> PLL;
-typedef vector<int> vi;
-typedef vector<vector<int>> vvi;
-typedef vector<vector<vector<int>>> vvvi;
-typedef vector<ll> vl;
-typedef vector<vector<ll>> vvl;
-typedef vector<vector<vector<int>>> vvvl;
-typedef vector<PI> vpi;
-typedef vector<vector<PI>> vvpi;
-typedef vector<vector<vector<PI>>> vvvpi;
-typedef vector<PLL> vpl;
-typedef vector<vector<PLL>> vvpl;
-typedef vector<vector<vector<PLL>>> vvvpl;
 
 int POWINT(int x, int n) {
   int ret = 1;
@@ -40,7 +26,7 @@ int POWINT(int x, int n) {
   return ret;
 };
 
-ll POWLL(ll x, int n) {
+ll POWLL(int x, int n) {
   ll ret = 1;
   rep(i, 0, n) ret *= x;
   return ret;
@@ -67,6 +53,17 @@ inline bool chmin(T &a, T b) {
 int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
+
+  int n;
+  cin >> n;
+  vector<int> T(n);
+  rep(i, 0, n) {
+    cin >> T[i];
+  }
+
+  sort(All(T));
+
+  cout << T[0] << endl;
 
   return 0;
 };

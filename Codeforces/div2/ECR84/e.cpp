@@ -3,7 +3,6 @@ using namespace std;
 
 #define rep(i,s,n) for (int i = (int)s; i < (int)n; i++)
 #define ll long long
-#define ld long double
 #define pb push_back
 #define eb emplace_back
 #define All(x) x.begin(), x.end()
@@ -17,22 +16,9 @@ using namespace std;
 #define Decimal(x) printf("%.10f\n", x) // 小数点を10桁まで表示
 // debug用
 #define PrintVec(x) for (auto elementPrintVec: x) { cout << elementPrintVec << " "; } cout << endl;
-#define debug(x) cerr << #x << ": " << (x) << "\n";
 
 typedef pair<int, int> PI;
 typedef pair<ll, ll> PLL;
-typedef vector<int> vi;
-typedef vector<vector<int>> vvi;
-typedef vector<vector<vector<int>>> vvvi;
-typedef vector<ll> vl;
-typedef vector<vector<ll>> vvl;
-typedef vector<vector<vector<int>>> vvvl;
-typedef vector<PI> vpi;
-typedef vector<vector<PI>> vvpi;
-typedef vector<vector<vector<PI>>> vvvpi;
-typedef vector<PLL> vpl;
-typedef vector<vector<PLL>> vvpl;
-typedef vector<vector<vector<PLL>>> vvvpl;
 
 int POWINT(int x, int n) {
   int ret = 1;
@@ -40,7 +26,7 @@ int POWINT(int x, int n) {
   return ret;
 };
 
-ll POWLL(ll x, int n) {
+ll POWLL(int x, int n) {
   ll ret = 1;
   rep(i, 0, n) ret *= x;
   return ret;
@@ -64,9 +50,52 @@ inline bool chmin(T &a, T b) {
   return false;
 };
 
+const ll mod = 998244353;
+
+ll dp[200005]; // dp[i] = 10^i
+void init() {
+  dp[0] = 1ll;
+  rep(i, 1, 200005) {
+    dp[i] = (dp[i-1] * 10LL) % mod;
+  }
+};
+
 int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
+
+  int n;
+  cin >> n;
+  init();
+  for (int i = 1; i <= n; i++) {
+    if (i == n) {
+      cout << 10;
+      continue;
+    }
+    ll mid = (ll)max(n - 1 - i, 0);
+    ll side = 2ll;
+
+    // middle
+    mid *= 810ll;
+    mid %= mod;
+    int mid_re = max(0, n - i - 2);
+    mid *= dp[mid_re];
+    mid %= mod;
+
+    // side
+    side *= 90ll;
+    side %= mod;
+    int side_re = max(0, n - i - 1);
+    side *= dp[side_re];
+    side %= mod;
+
+    ll out = (mid + side);
+    out %= mod;
+    cout << out;
+    if (i < n) cout << " ";
+  }
+
+  cout << endl;
 
   return 0;
 };
