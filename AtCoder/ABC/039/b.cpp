@@ -68,12 +68,13 @@ int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
 
-  ll x;
+  int x;
   cin >> x;
-  ll ans = 0ll;
-  ans += (x / 500ll) * 1000ll;
-  ll re = x % 500ll;
-  ans += (re / 5ll) * 5ll;
+  int ans;
+  for (int i = 1; i * i * i * i <= x; i++) {
+    if (i * i * i * i == x) ans = i;
+  }
+
   cout << ans << endl;
 
   return 0;

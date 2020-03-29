@@ -64,17 +64,37 @@ inline bool chmin(T &a, T b) {
   return false;
 };
 
+string tmp = "WBWBWWBWBWBW";
+string key = tmp + tmp + tmp + tmp;
+
+vector<string> T = {"Do", "Do", "Re", "Re", "Mi", "Fa", "Fa", "So", "So", "La", "La", "Si"};
+
+string solve(string s) {
+  string ret;
+  rep(i, 0, 12) {
+    bool flag = true;
+    rep(j, 0, 20) {
+      if (s[j] == key[i+j]) continue;
+      else {
+        flag = false;
+        break;
+      }
+    }
+    if (flag) {
+      ret = T[i];
+      break;
+    }
+  }
+  return ret;
+};
+
 int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
 
-  ll x;
-  cin >> x;
-  ll ans = 0ll;
-  ans += (x / 500ll) * 1000ll;
-  ll re = x % 500ll;
-  ans += (re / 5ll) * 5ll;
-  cout << ans << endl;
+  string s;
+  cin >> s;
+  cout << solve(s) << endl;
 
   return 0;
 };

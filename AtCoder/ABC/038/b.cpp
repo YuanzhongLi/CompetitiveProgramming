@@ -68,13 +68,13 @@ int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
 
-  ll x;
-  cin >> x;
-  ll ans = 0ll;
-  ans += (x / 500ll) * 1000ll;
-  ll re = x % 500ll;
-  ans += (re / 5ll) * 5ll;
-  cout << ans << endl;
+  int h1, w1, h2, w2;
+  cin >> h1 >> w1 >> h2 >> w2;
+  if (h1 == h2 || h1 == w2 || w1 == h2 || w1 == w2) {
+    cout << "YES" << endl;
+  } else {
+    cout << "NO" << endl;
+  }
 
   return 0;
 };

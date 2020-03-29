@@ -64,9 +64,31 @@ inline bool chmin(T &a, T b) {
   return false;
 };
 
+const int INF = 1e9+7;
+
 int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
+
+  int k, n;
+  cin >> k >> n;
+  vector<int> A(n+1);
+  rep(i, 0, n) {
+    cin >> A[i];
+  }
+
+  A[n] = k + A[0];
+  sort(All(A));
+
+
+  vector<int> ans(n);
+  rep(i, 0, n) {
+    ans[i] = A[i+1] - A[i];
+  }
+
+  sort(All(ans));
+
+  cout << k - ans[n-1] << endl;
 
   return 0;
 };

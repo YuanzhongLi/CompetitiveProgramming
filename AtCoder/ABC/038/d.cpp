@@ -64,17 +64,59 @@ inline bool chmin(T &a, T b) {
   return false;
 };
 
+class BOX {
+  public:
+  int x, y;
+  BOX() {}
+  BOX(int x, int y): x(x), y(y) {}
+  bool operator < (const BOX &b) {
+    if (x == b.x) {
+      return y > b.y;
+    } else {
+      return x < b.x;
+    }
+  }
+};
+
+vector<int> LIS(vector<int> &x, int s, int e) {
+  int INFTY = 1e9+7;
+  vector<int> ret(e - s, INFTY);
+  ret[0] = x[s];
+  int size = 1;
+  for (int i = s + 1; i < e; i++) {
+    int tmp = x[i];
+    // 注意: 以上、以下の場合 <= , >=となる
+    if (ret[size - 1] < tmp) {
+      ret[size++] = tmp;
+    } else {
+      // 注意: 以上、以下の場合upper_boundとなる
+      *lower_bound(ret.begin(), ret.end(), tmp) = tmp;
+    }
+  }
+  return vector<int> (ret.begin(), ret.begin()+size);
+};
+
 int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
 
-  ll x;
-  cin >> x;
-  ll ans = 0ll;
-  ans += (x / 500ll) * 1000ll;
-  ll re = x % 500ll;
-  ans += (re / 5ll) * 5ll;
-  cout << ans << endl;
+  int n;
+  cin >> n;
+
+  vector<BOX> boxes(n);
+  rep(i, 0, n) {
+    cin >> boxes[i].x >> boxes[i].y;
+  }
+
+  sort(All(boxes));
+
+  vi y(n);
+  rep(i, 0, n) {
+    y[i] = boxes[i].y;
+  }
+
+  auto vec = LIS(y, 0, n);
+  cout << (int)vec.size() << endl;
 
   return 0;
 };

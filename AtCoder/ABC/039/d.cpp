@@ -64,17 +64,91 @@ inline bool chmin(T &a, T b) {
   return false;
 };
 
+int dx[8] = {-1, 0, 1, 1, 1, 0, -1, -1}; // ul, u, ur, r, dr, d, dl, l
+int dy[8] = {-1, -1, -1, 0, 1, 1, 1, 0};
+
 int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
 
-  ll x;
-  cin >> x;
-  ll ans = 0ll;
-  ans += (x / 500ll) * 1000ll;
-  ll re = x % 500ll;
-  ans += (re / 5ll) * 5ll;
-  cout << ans << endl;
+  int h, w;
+  cin >> h >> w;
+  vvi after(h, vi(w)), recover(h, vi(w)), after2(h, vi(w));
+
+  char ch;
+  rep(i, 0, h) {
+    rep(j, 0, w) {
+      cin >> ch;
+      if (ch == '#') {
+        after[i][j] = 1;
+        recover[i][j] = 1;
+      } else {
+        after[i][j] = 0;
+        recover[i][j] = 0;
+      }
+    }
+  }
+
+  rep(i, 0, h) {
+    rep(j, 0, w) {
+      if (after[i][j] == 0) {
+        rep(k, 0, 8) {
+          int y = i + dy[k];
+          int x = j + dx[k];
+          if (0 <= x && x < w && 0 <= y && y < h) {
+            recover[y][x] = 0;
+          }
+        }
+      }
+    }
+  }
+
+  rep(i, 0, h) {
+    rep(j, 0, w) {
+      after2[i][j] = recover[i][j];
+    }
+  }
+
+  rep(i, 0, h) {
+    rep(j, 0, w) {
+      if (recover[i][j] == 1) {
+        rep(k, 0, 8) {
+          int y = i + dy[k];
+          int x = j + dx[k];
+          if (0 <= x && x < w && 0 <= y && y < h) {
+            after2[y][x] = 1;
+          }
+        }
+      }
+    }
+  }
+
+  bool ok = true;
+  rep(i, 0, h) {
+    rep(j, 0, w) {
+      if (after[i][j] == after2[i][j]) continue;
+      ok = false;
+      break;
+    }
+    if (ok) continue;
+    break;
+  }
+
+  if (ok) {
+    cout << "possible" << endl;
+    rep(i, 0, h) {
+      rep(j, 0, w) {
+        if (recover[i][j] == 1) {
+          cout << '#';
+        } else {
+          cout << ".";
+        }
+      }
+      cout << endl;
+    }
+  } else {
+    cout << "impossible" << endl;
+  }
 
   return 0;
 };

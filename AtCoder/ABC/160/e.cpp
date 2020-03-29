@@ -68,5 +68,52 @@ int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
 
+  int x, y;
+  cin >> x >> y;
+  int a, b, c;
+  cin >> a >> b >> c;
+  vl X(a), Y(b), Z(c);
+  ll p;
+  rep(i, 0, a) {
+    cin >> X[i];
+  }
+  rep(i, 0, b) {
+    cin >> Y[i];
+  }
+  rep(i, 0, c) {
+    cin >> Z[i];
+  }
+
+
+  sort(All(X));
+  reverse(All(X));
+  sort(All(Y));
+  reverse(All(Y));
+  sort(All(Z));
+  reverse(All(Z));
+
+  vi vec;
+  rep(i, 0, x) {
+    vec.pb(X[i]);
+  }
+  rep(i, 0, y) {
+    vec.pb(Y[i]);
+  }
+
+  rep(i, 0, c) {
+    vec.pb(Z[i]);
+  }
+
+  sort(All(vec));
+  reverse(All(vec));
+  ll ans = 0ll;
+  rep(i, 0, x+y) {
+    ans += vec[i];
+  }
+
+  cout << ans << endl;
+
+
+
   return 0;
 };

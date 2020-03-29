@@ -67,14 +67,9 @@ inline bool chmin(T &a, T b) {
 int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
-
-  ll x;
-  cin >> x;
-  ll ans = 0ll;
-  ans += (x / 500ll) * 1000ll;
-  ll re = x % 500ll;
-  ans += (re / 5ll) * 5ll;
-  cout << ans << endl;
+  int a, b, c;
+  cin >> a >> b >> c;
+  cout << 2*(a*b + b*c + a*c) << endl;
 
   return 0;
 };

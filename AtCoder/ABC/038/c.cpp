@@ -64,16 +64,40 @@ inline bool chmin(T &a, T b) {
   return false;
 };
 
+ll T[100005];
+
+void init() {
+  T[0] = 0ll;
+  rep(i, 1, 100005) {
+    T[i] = T[i-1] + (ll)i;
+  }
+};
+
 int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
 
-  ll x;
-  cin >> x;
+  int n;
+  cin >> n;
+  vi A(n+1);
+  rep(i, 0, n) {
+    cin >> A[i];
+  }
+  A[n] = -1;
+
+  init();
+  int l = 0;
+  int r = 1;
   ll ans = 0ll;
-  ans += (x / 500ll) * 1000ll;
-  ll re = x % 500ll;
-  ans += (re / 5ll) * 5ll;
+  while (l < n) {
+    int r = l+1;
+    while (A[r] > A[r-1]) {
+      r++;
+    }
+    ans += T[r-l];
+    l = r;
+  }
+
   cout << ans << endl;
 
   return 0;
