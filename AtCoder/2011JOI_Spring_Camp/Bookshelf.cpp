@@ -64,36 +64,68 @@ inline bool chmin(T &a, T b) {
   return false;
 };
 
+class SegmentTree{
+  private:
+  const int INIT = 0;
+  static const int MAX_N = 1 << 17;
+  int n;
+  ll dat[2 * MAX_N -1];
+
+  public:
+  void init(ll n_){
+    n = 1;
+    while (n < n_) n*= 2;
+    for (ll i=0; i< 2*n-1; i++) dat[i] = INIT;
+  }
+
+  // k番目の値(0-indexed)をaに変更
+  void update(int k, ll a){
+    k += n-1;
+    dat[k] = a;
+    while(k > 0){
+      k = (k-1) / 2;
+      dat[k] = max(dat[k*2 + 1], dat[k * 2 + 2]);
+    }
+  }
+
+  //[a, b)のmaxを求める
+  ll query(ll a, ll b, ll k = 0, ll l = 0, ll r = -1){
+    if (r < 0) r = n;
+    if (r <= a || b <= l) return INIT;
+
+    if (a <= l && r <= b) return dat[k];
+
+    ll vl = query(a, b, k * 2 + 1, l, (l + r) / 2);
+    ll vr = query(a, b, k * 2 + 2, (l + r) / 2, r);
+    return max(vl, vr);
+  }
+};
+
 int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
-  int n;
+  ll n;
   cin >> n;
-  vector<int> A(n);
-  map<int, int> mp;
+  SegmentTree ST;
+  ST.init(n);
+  vl w(n);
+  ll sum = 0;
+
   rep(i, 0, n) {
-    cin >> A[i];
-    mp[A[i]] = 0;
+    ll w_; cin >> w_;
+    w[i] = w_;
+    sum += w[i];
   }
 
-  int ans = 0;
-  int t = 0;
-  int cnt = 0;
-  rep(s, 0, n) {
-    while (t < n && s <= t) {
-      if (mp[A[t]] == 0) {
-        mp[A[t]]++;
-        t++;
-      } else {
-        break;
-      }
-    }
+  rep(i, 0, n) {
+    ll b;
+    cin >> b;
+    b--;
 
-    ans = max(ans, t-s);
-    if (t >= n) break;
-    mp[A[s]]--;
+    ST.update(b, ST.query(0, b) + w[b]);
   }
 
+  ll ans = (sum - ST.query(0, n)) * 2;
   cout << ans << endl;
 
   return 0;
