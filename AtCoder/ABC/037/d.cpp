@@ -16,9 +16,8 @@ using namespace std;
 #define Find(set, element) set.find(element) != set.end()
 #define Decimal(x) printf("%.10f\n", x) // 小数点を10桁まで表示
 // debug用
-#define PrintVec(x) for (auto elementPrintVec: x) { cout << elementPrintVec << " "; } cout << "\n";
+#define PrintVec(x) for (auto elementPrintVec: x) { cout << elementPrintVec << " "; } cout << endl;
 #define debug(x) cerr << #x << ": " << (x) << "\n";
-#define endl "\n"
 
 typedef pair<int, int> PI;
 typedef pair<ll, ll> PLL;
@@ -65,9 +64,70 @@ inline bool chmin(T &a, T b) {
   return false;
 };
 
+int dx[4] = {0, 1, 0, -1}; // u, r, d, l
+int dy[4] = {-1, 0, 1, 0};
+
+const int mod = 1e9+7;
+
 int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
+
+  int h, w;
+  cin >> h >> w;
+  vvi grid(h, vi(w));
+  rep(i, 0, h) {
+    rep(j, 0, w) {
+      cin >> grid[i][j];
+    }
+  }
+
+  vi ord(h*w);
+  iota(All(ord), 0);
+  vi vertices(h*w);
+
+  vi adj[h*w];
+  rep(i, 0, h) {
+    rep(j, 0, w) {
+      int cur_id = i * w + j;
+      int cur = grid[i][j];
+      vertices[cur_id] = cur;
+      rep(k, 0, 4) {
+        int r = i + dy[k];
+        int c = j + dx[k];
+        if (0 <= r && r < h && 0 <= c && c < w) {
+          int nxt = grid[r][c];
+          int nxt_id = r * w + c;
+          if (nxt > cur) {
+            adj[cur_id].pb(nxt_id);
+          }
+        }
+      }
+    }
+  }
+
+  sort(All(ord), [&](int a, int b) {
+    return vertices[a] < vertices[b];
+  });
+
+  vl dp(h*w, 0);
+
+  rep(i, 0, h*w) {
+    int u = ord[i];
+    dp[u]++;
+    dp[u] %= mod;
+    for (int v: adj[u]) {
+      dp[v] += dp[u];
+      dp[v] %= mod;
+    }
+  }
+  int ans = 0;
+  rep(i, 0, h*w) {
+    ans += dp[i];
+    ans %= mod;
+  }
+
+  cout << ans << endl;
 
   return 0;
 };

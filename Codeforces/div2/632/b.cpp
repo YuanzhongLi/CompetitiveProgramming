@@ -16,9 +16,8 @@ using namespace std;
 #define Find(set, element) set.find(element) != set.end()
 #define Decimal(x) printf("%.10f\n", x) // 小数点を10桁まで表示
 // debug用
-#define PrintVec(x) for (auto elementPrintVec: x) { cout << elementPrintVec << " "; } cout << "\n";
+#define PrintVec(x) for (auto elementPrintVec: x) { cout << elementPrintVec << " "; } cout << endl;
 #define debug(x) cerr << #x << ": " << (x) << "\n";
-#define endl "\n"
 
 typedef pair<int, int> PI;
 typedef pair<ll, ll> PLL;
@@ -68,6 +67,56 @@ inline bool chmin(T &a, T b) {
 int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
+
+  int T;
+  cin >> T;
+  rep(t, 0, T) {
+    int n;
+    cin >> n;
+    vvi has(n, vi (2, 0));
+    vi a(n);
+    rep(i, 0, n) {
+      cin >> a[i];
+      if (a[i] == -1) {
+        has[i][0] = 1;
+      } else if (a[i] == 1) {
+        has[i][1] = 1;
+      }
+    }
+
+    rep(i, 1, n) {
+      rep(j, 0, 2) {
+        has[i][j] = max(has[i][j], has[i-1][j]);
+      }
+    }
+
+    vi b(n);
+    rep(i, 0, n) {
+      cin >> b[i];
+    }
+    bool ok = (a[0] == b[0]);
+    for (int i = n-1; i > 0; i--) {
+      if (a[i] > b[i]) {
+        if (has[i-1][0]) continue;
+        else {
+          ok = false;
+          break;
+        }
+      }
+      if (a[i] < b[i]) {
+        if (has[i-1][1]) continue;
+        else {
+          ok = false;
+          break;
+        }
+      }
+    }
+    if (ok) {
+      cout << "YES" << endl;
+    } else {
+      cout << "NO" << endl;
+    }
+  }
 
   return 0;
 };

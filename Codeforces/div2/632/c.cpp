@@ -16,9 +16,8 @@ using namespace std;
 #define Find(set, element) set.find(element) != set.end()
 #define Decimal(x) printf("%.10f\n", x) // 小数点を10桁まで表示
 // debug用
-#define PrintVec(x) for (auto elementPrintVec: x) { cout << elementPrintVec << " "; } cout << "\n";
+#define PrintVec(x) for (auto elementPrintVec: x) { cout << elementPrintVec << " "; } cout << endl;
 #define debug(x) cerr << #x << ": " << (x) << "\n";
-#define endl "\n"
 
 typedef pair<int, int> PI;
 typedef pair<ll, ll> PLL;
@@ -68,6 +67,34 @@ inline bool chmin(T &a, T b) {
 int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
+
+  ll n;
+  cin >> n;
+  vl a(n+1);
+  rep(i, 1, n+1) {
+    cin >> a[i];
+  }
+
+  vl sum(n+1, 0ll);
+  map<ll, ll> mp;
+  mp[0] = 0ll;
+  ll cnt = 0ll;
+  ll tmp = 0ll;
+  rep(i, 1, n+1) {
+    sum[i] = a[i] + sum[i-1];
+    if (Find(mp, sum[i])) {
+      tmp = max(tmp, mp[sum[i]]+1);
+      cnt += tmp;
+      mp[sum[i]] = (ll)i;
+    } else {
+      mp[sum[i]] = (ll)i;
+      cnt += tmp;
+    }
+  }
+
+  ll all = n * (n+1ll) / 2ll;
+  // debug(all);
+  cout << all - cnt << endl;
 
   return 0;
 };

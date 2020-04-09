@@ -16,9 +16,8 @@ using namespace std;
 #define Find(set, element) set.find(element) != set.end()
 #define Decimal(x) printf("%.10f\n", x) // 小数点を10桁まで表示
 // debug用
-#define PrintVec(x) for (auto elementPrintVec: x) { cout << elementPrintVec << " "; } cout << "\n";
+#define PrintVec(x) for (auto elementPrintVec: x) { cout << elementPrintVec << " "; } cout << endl;
 #define debug(x) cerr << #x << ": " << (x) << "\n";
-#define endl "\n"
 
 typedef pair<int, int> PI;
 typedef pair<ll, ll> PLL;
@@ -65,9 +64,69 @@ inline bool chmin(T &a, T b) {
   return false;
 };
 
+vector<int> divisor(int n) {
+  vector<int> ret;
+  for(int i = 1; i * i <= n; i++) {
+    if(n % i == 0) {
+      ret.push_back(i);
+      if(i * i != n) ret.push_back(n / i);
+    }
+  }
+  sort(All(ret));
+  return (ret);
+};
+
 int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
+
+  int n, q;
+  cin >> n >> q;
+  vi A(n);
+  rep(i, 0, n) {
+    cin >> A[i];
+  }
+
+  vi gcd_A(n);
+  gcd_A[0] = A[0];
+  rep(i, 1, n) {
+    gcd_A[i] = __gcd(gcd_A[i-1], A[i]);
+  }
+
+  vi gcds, ords;
+  gcds.pb(gcd_A[0]);
+  ords.pb(0);
+  rep(i, 1, n) {
+    if (gcd_A[i] != gcd_A[i-1]) {
+      gcds.pb(gcd_A[i]);
+      ords.pb(i);
+    }
+  }
+
+  vi S(q);
+  rep(i, 0, q) {
+    cin >> S[i];
+  }
+
+  vi ans(q);
+  rep(i, 0, q) {
+    int s = S[i];
+    rep(j, 0, gcds.size()) {
+      s = __gcd(s, gcds[j]);
+      if (s == 1) {
+        ans[i] = ords[j]+1;
+        break;
+      }
+    }
+    if (s > 1) {
+      ans[i] = s;
+    }
+  }
+
+  rep(i, 0, q) {
+    cout << ans[i] << endl;
+  }
+
 
   return 0;
 };

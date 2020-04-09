@@ -16,9 +16,8 @@ using namespace std;
 #define Find(set, element) set.find(element) != set.end()
 #define Decimal(x) printf("%.10f\n", x) // 小数点を10桁まで表示
 // debug用
-#define PrintVec(x) for (auto elementPrintVec: x) { cout << elementPrintVec << " "; } cout << "\n";
+#define PrintVec(x) for (auto elementPrintVec: x) { cout << elementPrintVec << " "; } cout << endl;
 #define debug(x) cerr << #x << ": " << (x) << "\n";
-#define endl "\n"
 
 typedef pair<int, int> PI;
 typedef pair<ll, ll> PLL;
@@ -68,6 +67,48 @@ inline bool chmin(T &a, T b) {
 int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
+
+  int a, b, c;
+  cin >> a >> b >> c;
+  int n = a + b + c;
+  vi A(n);
+  rep(i, 0, n) {
+    A[i] = i;
+  }
+  int ans = 0;
+  do {
+    vvi table(3, vi(3, 100));
+    rep(i, 0, a) {
+      table[0][i] = A[i];
+    }
+    rep(i, 0, b) {
+      table[1][i] = A[a+i];
+    }
+    rep(i, 0, c) {
+      table[2][i] = A[a+b+i];
+    }
+    bool ok = true;
+
+    rep(i, 0, 3) {
+      rep(j, 0, 2) {
+        if (table[i][j+1] >= table[i][j]) continue;
+        else ok = false;
+      }
+    }
+
+    rep(i, 0, 2) {
+      rep(j, 0, 3) {
+        if (table[i+1][j] >= table[i][j]) continue;
+        else ok = false;
+      }
+    }
+
+    if (ok) {
+      ans++;
+    }
+  } while (next_permutation(All(A)));
+
+  cout << ans << endl;
 
   return 0;
 };
