@@ -19,8 +19,6 @@ using namespace std;
 #define PrintVec(x) for (auto elementPrintVec: x) { cout << elementPrintVec << " "; } cout << "\n";
 #define debug(x) cerr << #x << ": " << (x) << "\n";
 #define endl "\n"
-// gcj print用
-#define Case(x) printf("Case #%d: ", x);
 
 typedef pair<int, int> PI;
 typedef pair<ll, ll> PLL;
@@ -39,21 +37,13 @@ typedef vector<vector<vector<PLL>>> vvvpl;
 
 int POWINT(int x, int n) {
   int ret = 1;
-  while (n > 0) {
-    if (n & 1) ret *= x;
-    x *= x;
-    n >>= 1;
-  }
+  rep(i, 0, n) ret *= x;
   return ret;
 };
 
 ll POWLL(ll x, int n) {
   ll ret = 1;
-  while (n > 0) {
-    if (n & 1) ret *= x;
-    x *= x;
-    n >>= 1;
-  }
+  rep(i, 0, n) ret *= x;
   return ret;
 };
 
@@ -75,9 +65,57 @@ inline bool chmin(T &a, T b) {
   return false;
 };
 
+const int mod = 1e9+7;
+
+int const MAX_N = 100;
+int const MAX_K = 100005;
+int dp[MAX_N][MAX_K];
+int sum[MAX_N][MAX_K];
+
 int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
+
+  int N, K;
+  cin >> N >> K;
+  vi A(N);
+  rep(i, 0, N) {
+    cin >> A[i];
+  }
+
+  rep(i, 0, K+1) {
+    if (A[0] >= i) {
+      dp[0][i] = 1;
+    } else {
+      dp[0][i] = 0;
+    }
+  }
+  sum[0][0] = dp[0][0];
+  rep(i, 1, K+1) {
+    sum[0][i] = sum[0][i-1] + dp[0][i];
+    sum[0][i] %= mod;
+  }
+
+  rep(i, 1, N) {
+    rep(j, 0, K+1) {
+      int ma = max(0, j - A[i]);
+      if (ma == 0) {
+        dp[i][j] += sum[i-1][j];
+        dp[i][j] %= mod;
+      } else {
+        dp[i][j] += ((sum[i-1][j] + mod - sum[i-1][j - A[i] - 1]) % mod);
+        dp[i][j] %= mod;
+      }
+    }
+    sum[i][0] = dp[i][0];
+    rep(j, 1, K+1) {
+      sum[i][j] = sum[i][j-1] + dp[i][j];
+      sum[i][j] %= mod;
+    }
+
+  }
+
+  cout << dp[N-1][K] << endl;
 
   return 0;
 };

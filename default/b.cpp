@@ -19,6 +19,8 @@ using namespace std;
 #define PrintVec(x) for (auto elementPrintVec: x) { cout << elementPrintVec << " "; } cout << "\n";
 #define debug(x) cerr << #x << ": " << (x) << "\n";
 #define endl "\n"
+// gcj print用
+#define Case(x) printf("Case #%d: ", x);
 
 typedef pair<int, int> PI;
 typedef pair<ll, ll> PLL;
@@ -37,13 +39,21 @@ typedef vector<vector<vector<PLL>>> vvvpl;
 
 int POWINT(int x, int n) {
   int ret = 1;
-  rep(i, 0, n) ret *= x;
+  while (n > 0) {
+    if (n & 1) ret *= x;
+    x *= x;
+    n >>= 1;
+  }
   return ret;
 };
 
 ll POWLL(ll x, int n) {
   ll ret = 1;
-  rep(i, 0, n) ret *= x;
+  while (n > 0) {
+    if (n & 1) ret *= x;
+    x *= x;
+    n >>= 1;
+  }
   return ret;
 };
 

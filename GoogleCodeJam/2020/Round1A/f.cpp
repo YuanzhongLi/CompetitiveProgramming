@@ -39,21 +39,13 @@ typedef vector<vector<vector<PLL>>> vvvpl;
 
 int POWINT(int x, int n) {
   int ret = 1;
-  while (n > 0) {
-    if (n & 1) ret *= x;
-    x *= x;
-    n >>= 1;
-  }
+  rep(i, 0, n) ret *= x;
   return ret;
 };
 
 ll POWLL(ll x, int n) {
   ll ret = 1;
-  while (n > 0) {
-    if (n & 1) ret *= x;
-    x *= x;
-    n >>= 1;
-  }
+  rep(i, 0, n) ret *= x;
   return ret;
 };
 

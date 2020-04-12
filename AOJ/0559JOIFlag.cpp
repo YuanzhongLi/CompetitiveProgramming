@@ -19,8 +19,6 @@ using namespace std;
 #define PrintVec(x) for (auto elementPrintVec: x) { cout << elementPrintVec << " "; } cout << "\n";
 #define debug(x) cerr << #x << ": " << (x) << "\n";
 #define endl "\n"
-// gcj print用
-#define Case(x) printf("Case #%d: ", x);
 
 typedef pair<int, int> PI;
 typedef pair<ll, ll> PLL;
@@ -39,21 +37,13 @@ typedef vector<vector<vector<PLL>>> vvvpl;
 
 int POWINT(int x, int n) {
   int ret = 1;
-  while (n > 0) {
-    if (n & 1) ret *= x;
-    x *= x;
-    n >>= 1;
-  }
+  rep(i, 0, n) ret *= x;
   return ret;
 };
 
 ll POWLL(ll x, int n) {
   ll ret = 1;
-  while (n > 0) {
-    if (n & 1) ret *= x;
-    x *= x;
-    n >>= 1;
-  }
+  rep(i, 0, n) ret *= x;
   return ret;
 };
 
@@ -75,9 +65,35 @@ inline bool chmin(T &a, T b) {
   return false;
 };
 
+const int mod = 1e5;
+
+const int MAX_M = 20;
+const int MAX_N = 20;
+
+int dp_cur[1 << MAX_M];
+int dp_nxt[1 << MAX_M];
+
 int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
+  int n, m;
+  cin >> n >> m;
+  vector<vector<char>> grid(n, vector<char> (m));
+  rep(i, 0, n) {
+    rep(j, 0, m) {
+      cin >> grid[i][j];
+    }
+  }
+
+  rep(i, 0, n) {
+    rep(j, 0, m) {
+      for (int k = 1; k < (1 << (m-1))) {
+
+      }
+    }
+  }
+
+
 
   return 0;
 };
