@@ -147,49 +147,28 @@ int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
 
-  int N; cin >> N;
-  string S; cin >> S;
+  int N, Q;
+  cin >> N >> Q;
 
-  vector<LazySegTree> lsts(26, LazySegTree(N));
-
-  rep(i, 0, N) {
-    char ch = S[i];
-    int int_ch = (int) ch - 'a';
-    lsts[int_ch].update(i, i+1, 1);
+  LazySegTree lst(N);
+  while (Q--) {
+    int l, r;
+    cin >> l >> r;
+    l--;
+    lst.update(l, r, 1);
   }
 
-  int Q; cin >> Q;
-  while (Q--) {
-    int a;
-    cin >> a;
-    if (a == 1) {
-      int i;
-      char c;
-      cin >> i >> c; i--;
-      if (S[i] == c) {
-        continue;
-      } else {
-        char ch = S[i];
-        int int_ch = (int) ch - 'a';
-        int int_c = (int) c - 'a';
-        lsts[int_ch].update(i, i+1, -1);
-        lsts[int_c].update(i, i+1, 1);
-        S[i] = c;
-      }
+  int ans = 0;
+  rep(i, 0, N) {
+    int num = lst.query(i, i+1);
+    if (num % 2 == 0) {
+      cout << 0;
     } else {
-      int l, r;
-      cin >> l >> r;
-      l--;
-      int res = 0;
-      rep(i, 0, 26) {
-        int tmp = lsts[i].query(l, r);
-        if (tmp > 0) {
-          res++;
-        }
-      }
-      cout << res << endl;
+      cout << 1;
     }
   }
+
+  cout << endl;
 
   return 0;
 };
