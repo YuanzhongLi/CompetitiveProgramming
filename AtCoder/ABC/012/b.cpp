@@ -75,7 +75,9 @@ inline bool chmin(T &a, T b) {
   return false;
 };
 
-int solve(int N, int x) {
+// 左づめでの10進数xをdigits桁のN進数vectorにしてを返す
+vector<int> baseNumber(int N, int digits, int x) {
+  vector<int> ret(digits, 0);
   // 商
   int quotient = x;
   int counter = 0;
@@ -83,20 +85,44 @@ int solve(int N, int x) {
     // 余り
     int remainder = quotient % N;
     quotient /= N;
+    ret[counter] = remainder;
     counter++;
   }
 
-  return counter;
+  reverse(All(ret));
+
+  return ret;
 };
 
 int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
 
-  int N, K;
-  cin >> N >> K;
+  int N;
+  cin >> N;
+  int h = N / 3600;
+  N %= 3600;
+  int m = N / 60;
+  N %= 60;
+  int s = N;
 
-  cout << solve(K, N) << endl;
+  auto hh = baseNumber(10, 2, h);
+  auto mm = baseNumber(10, 2, m);
+  auto ss = baseNumber(10, 2, s);
+
+  for (int tmp: hh) {
+    cout << tmp;
+  }
+  cout << ":";
+  for (int tmp: mm) {
+    cout << tmp;
+  }
+  cout << ":";
+  for (int tmp: ss) {
+    cout << tmp;
+  }
+  cout << endl;
+
 
   return 0;
 };

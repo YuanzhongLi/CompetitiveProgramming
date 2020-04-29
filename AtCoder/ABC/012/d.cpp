@@ -75,28 +75,65 @@ inline bool chmin(T &a, T b) {
   return false;
 };
 
-int solve(int N, int x) {
-  // 商
-  int quotient = x;
-  int counter = 0;
-  while (quotient > 0) {
-    // 余り
-    int remainder = quotient % N;
-    quotient /= N;
-    counter++;
+static const int MAX = 400;
+static const ll INFTY = 1e15;
+
+// N: node数, M: edge数
+ll N, M;
+ll dist[MAX][MAX];
+
+// nodeAと nodeBの 距離(Cost) C
+ll A[100000], B[100000], C[100000];
+
+void input() {
+  cin >> N >> M;
+  for (int i = 1; i <= M; i++) cin >> A[i] >> B[i] >> C[i];
+};
+
+void floyd() {
+  input();
+  // 初期化
+  for (int i = 1; i <= N; i++) {
+    for (int j = 1; j <= N; j++) {
+      dist[i][j] = INFTY;
+    }
+    dist[i][i] = 0;
   }
 
-  return counter;
+  // 初期node間距離代入
+  for (int i = 1; i <= M; i++) {
+    chmin(dist[A[i]][B[i]], C[i]);
+    chmin(dist[B[i]][A[i]], C[i]);
+  }
+
+  // フロイド法によって全点間の最短距離を算出
+  for (int i = 1; i <= N; i++) {
+    for (int j = 1; j <= N; j++) {
+      for (int k = 1; k <= N; k++) {
+        chmin(dist[j][k], dist[j][i] + dist[i][k]);
+      }
+    }
+  }
 };
 
 int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
 
-  int N, K;
-  cin >> N >> K;
+  ll ans = 1e18;
 
-  cout << solve(K, N) << endl;
+  floyd();
+
+  rep(i, 1, N+1) {
+    ll tmp = 0;
+    rep(j, 1, N+1) {
+      chmax(tmp, dist[i][j]);
+    }
+    chmin(ans, tmp);
+  }
+
+  cout << ans << endl;
+
 
   return 0;
 };

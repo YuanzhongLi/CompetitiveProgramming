@@ -75,28 +75,14 @@ inline bool chmin(T &a, T b) {
   return false;
 };
 
-int solve(int N, int x) {
-  // 商
-  int quotient = x;
-  int counter = 0;
-  while (quotient > 0) {
-    // 余り
-    int remainder = quotient % N;
-    quotient /= N;
-    counter++;
-  }
-
-  return counter;
-};
-
 int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
 
-  int N, K;
-  cin >> N >> K;
-
-  cout << solve(K, N) << endl;
+  int A, B;
+  cin >> A >> B;
+  swap(A, B);
+  cout << A << " " << B << endl;
 
   return 0;
 };
