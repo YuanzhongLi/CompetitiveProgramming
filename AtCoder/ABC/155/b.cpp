@@ -75,84 +75,30 @@ inline bool chmin(T &a, T b) {
   return false;
 };
 
-const int MAX_V = 50;
-const int MAX_S = MAX_V * MAX_V + 5;
-const ll INF = 1e18;
-
-struct Edge {
-  int to, a, b;
-  Edge(int to, int a, int b): to(to), a(a), b(b) {}
-};
-
-struct Data {
-  int v, s;
-  ll x;
-  Data(int v, int s, ll x): v(v), s(s), x(x) {}
-  bool operator < (const Data &a) const {
-    return x > a.x;
-  }
-};
-
-vector<Edge> g[MAX_V];
-ll dp[MAX_V][MAX_S+5];
-
 int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
 
-  int n, m, s;
-  cin >> n >> m >> s;
+  int N; cin >> N;
+  int a;
 
-  rep(i, 0, m) {
-    int u, v, a, b;
-    cin >> u >> v >> a >> b;
-    u--; v--;
-    g[u].eb(v, a, b);
-    g[v].eb(u, a, b);
-  }
-
-  vi c(n), d(n);
-  rep(i, 0, n) {
-    cin >> c[i] >> d[i];
-  }
-
-  rep(i, 0, n) {
-    rep(j, 0, MAX_S+5) dp[i][j] = INF;
-  }
-
-  s = min(s, MAX_S);
-
-  priority_queue<Data> pq;
-  auto push = [&](int v, int s, ll x) {
-    if (s < 0) return ;
-    if (dp[v][s] <= x) return ;
-    dp[v][s] = x;
-    pq.emplace(v, s, x);
-  };
-
-  push(0, s, 0);
-  while (!pq.empty()) {
-    Data hoge = pq.top(); pq.pop();
-    int v = hoge.v, s = hoge.s;
-    ll x = hoge.x;
-    if (dp[v][s] != x) continue;
-    {
-      int ns = min(s+c[v], MAX_S);
-      push(v, ns, x+d[v]);
-    }
-    for (Edge e: g[v]) {
-      push(e.to, s-e.a, x+e.b);
+  bool ok = true;
+  rep(i, 0, N) {
+    cin >> a;
+    if (a % 2 == 0) {
+      if (a % 3 == 0 || a % 5 == 0) {
+        continue;
+      } else {
+        ok = false;
+      }
     }
   }
 
-  rep(i, 1, n) {
-    ll ans = INF;
-    rep(j, 0, MAX_S+5) {
-      chmin(ans, dp[i][j]);
-    }
-    cout << ans << endl;
+  if (ok) {
+    cout << "APPROVED" << endl;
+  } else {
+    cout << "DENIED" << endl;
   }
-
 
   return 0;
 };

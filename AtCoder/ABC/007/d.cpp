@@ -75,84 +75,65 @@ inline bool chmin(T &a, T b) {
   return false;
 };
 
-const int MAX_V = 50;
-const int MAX_S = MAX_V * MAX_V + 5;
-const ll INF = 1e18;
-
-struct Edge {
-  int to, a, b;
-  Edge(int to, int a, int b): to(to), a(a), b(b) {}
-};
-
-struct Data {
-  int v, s;
-  ll x;
-  Data(int v, int s, ll x): v(v), s(s), x(x) {}
-  bool operator < (const Data &a) const {
-    return x > a.x;
+// 左づめでの10進数xをdigits桁のN進数vectorにしてを返す
+vector<int> baseNumberLL(ll N, int digits, ll x) {
+  vector<int> ret(digits, 0);
+  // 商
+  ll quotient = x;
+  int counter = 0;
+  while (quotient) {
+    // 余り
+    ll remainder = quotient % (int)N;
+    quotient /= N;
+    ret[counter] = (int)remainder;
+    counter++;
   }
+
+  return ret;
 };
 
-vector<Edge> g[MAX_V];
-ll dp[MAX_V][MAX_S+5];
+ll T[10] = {0, 1, 2, 3, 4, 4, 5, 6, 7, 8};
+
+ll dp1[20], dp2[20];
+
+ll solve(ll x) {
+  if (x == 0) return 1ll;
+  auto vec = baseNumberLL(10ll, 20, x);
+  while (vec.back() == 0) vec.pop_back();
+  reverse(All(vec));
+
+  rep(i, 0, 20) {
+    dp1[i] = dp2[i] = 0ll;
+  }
+
+  dp2[0] = 1;
+
+  rep(i, 0, vec.size()) {
+    int num = vec[i];
+    dp1[i+1] = dp1[i] * 8ll + dp2[i] * T[num];
+
+    if (num == 4 || num == 9) {
+      dp2[i+1] = 0ll;
+    } else {
+      dp2[i+1] = dp2[i];
+    }
+  }
+
+  return dp1[vec.size()] + dp2[vec.size()];
+};
 
 int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
 
-  int n, m, s;
-  cin >> n >> m >> s;
+  ll a, b;
+  cin >> a >> b;
+  a--;
 
-  rep(i, 0, m) {
-    int u, v, a, b;
-    cin >> u >> v >> a >> b;
-    u--; v--;
-    g[u].eb(v, a, b);
-    g[v].eb(u, a, b);
-  }
+  ll A = solve(a);
+  ll B = solve(b);
 
-  vi c(n), d(n);
-  rep(i, 0, n) {
-    cin >> c[i] >> d[i];
-  }
-
-  rep(i, 0, n) {
-    rep(j, 0, MAX_S+5) dp[i][j] = INF;
-  }
-
-  s = min(s, MAX_S);
-
-  priority_queue<Data> pq;
-  auto push = [&](int v, int s, ll x) {
-    if (s < 0) return ;
-    if (dp[v][s] <= x) return ;
-    dp[v][s] = x;
-    pq.emplace(v, s, x);
-  };
-
-  push(0, s, 0);
-  while (!pq.empty()) {
-    Data hoge = pq.top(); pq.pop();
-    int v = hoge.v, s = hoge.s;
-    ll x = hoge.x;
-    if (dp[v][s] != x) continue;
-    {
-      int ns = min(s+c[v], MAX_S);
-      push(v, ns, x+d[v]);
-    }
-    for (Edge e: g[v]) {
-      push(e.to, s-e.a, x+e.b);
-    }
-  }
-
-  rep(i, 1, n) {
-    ll ans = INF;
-    rep(j, 0, MAX_S+5) {
-      chmin(ans, dp[i][j]);
-    }
-    cout << ans << endl;
-  }
-
+  cout << (b - (a+1ll) + 1ll) - (B - A) << endl;
 
   return 0;
 };

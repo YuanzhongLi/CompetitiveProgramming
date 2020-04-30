@@ -75,84 +75,63 @@ inline bool chmin(T &a, T b) {
   return false;
 };
 
-const int MAX_V = 50;
-const int MAX_S = MAX_V * MAX_V + 5;
-const ll INF = 1e18;
-
-struct Edge {
-  int to, a, b;
-  Edge(int to, int a, int b): to(to), a(a), b(b) {}
-};
-
-struct Data {
-  int v, s;
-  ll x;
-  Data(int v, int s, ll x): v(v), s(s), x(x) {}
-  bool operator < (const Data &a) const {
-    return x > a.x;
-  }
-};
-
-vector<Edge> g[MAX_V];
-ll dp[MAX_V][MAX_S+5];
+int dx[4] = {0, 1, 0, -1}; // u, r, d, l
+int dy[4] = {-1, 0, 1, 0};
 
 int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
 
-  int n, m, s;
-  cin >> n >> m >> s;
+  int r, c; cin >> r >> c;
 
-  rep(i, 0, m) {
-    int u, v, a, b;
-    cin >> u >> v >> a >> b;
-    u--; v--;
-    g[u].eb(v, a, b);
-    g[v].eb(u, a, b);
-  }
+  int sy, sx, gy, gx;
+  cin >> sy >> sx >> gy >> gx;
+  sy--; sx--; gy--; gx--;
 
-  vi c(n), d(n);
-  rep(i, 0, n) {
-    cin >> c[i] >> d[i];
-  }
+  int s = sy * c + sx;
+  int g = gy * c + gx;
 
-  rep(i, 0, n) {
-    rep(j, 0, MAX_S+5) dp[i][j] = INF;
-  }
-
-  s = min(s, MAX_S);
-
-  priority_queue<Data> pq;
-  auto push = [&](int v, int s, ll x) {
-    if (s < 0) return ;
-    if (dp[v][s] <= x) return ;
-    dp[v][s] = x;
-    pq.emplace(v, s, x);
-  };
-
-  push(0, s, 0);
-  while (!pq.empty()) {
-    Data hoge = pq.top(); pq.pop();
-    int v = hoge.v, s = hoge.s;
-    ll x = hoge.x;
-    if (dp[v][s] != x) continue;
-    {
-      int ns = min(s+c[v], MAX_S);
-      push(v, ns, x+d[v]);
-    }
-    for (Edge e: g[v]) {
-      push(e.to, s-e.a, x+e.b);
+  vector<vector<char>> grid(r, vector<char>(c));
+  rep(i, 0, r) {
+    rep(j, 0, c) {
+      cin >> grid[i][j];
     }
   }
 
-  rep(i, 1, n) {
-    ll ans = INF;
-    rep(j, 0, MAX_S+5) {
-      chmin(ans, dp[i][j]);
+  vvi graph(r*c);
+  rep(u, 0, r*c) {
+    int uy = u / c;
+    int ux = u  % c;
+    if (grid[uy][ux] == '#') continue;
+    rep(j, 0, 4) {
+      int vy = uy + dy[j];
+      int vx = ux + dx[j];
+      if (0 <= vy && vy < r && 0 <= vx && vx < c) {
+        if (grid[vy][vx] == '#') continue;
+        int v = vy * c + vx;
+        graph[u].pb(v);
+        graph[v].pb(u);
+      }
     }
-    cout << ans << endl;
   }
 
+  vi dist(r*c);
+  queue<int> q;
+  q.push(s);
+  dist[s] = 0;
+  vector<bool> visited(r*c, false);
+  while (!q.empty()) {
+    int u = q.front(); q.pop();
+    if (visited[u]) continue;
+    visited[u] = true;
+    for (auto v: graph[u]) {
+      if (visited[v]) continue;
+      dist[v] = dist[u] + 1;
+      q.push(v);
+    }
+  }
+
+  cout << dist[g] << endl;
 
   return 0;
 };

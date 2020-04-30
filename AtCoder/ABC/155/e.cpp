@@ -75,84 +75,46 @@ inline bool chmin(T &a, T b) {
   return false;
 };
 
-const int MAX_V = 50;
-const int MAX_S = MAX_V * MAX_V + 5;
-const ll INF = 1e18;
-
-struct Edge {
-  int to, a, b;
-  Edge(int to, int a, int b): to(to), a(a), b(b) {}
-};
-
-struct Data {
-  int v, s;
-  ll x;
-  Data(int v, int s, ll x): v(v), s(s), x(x) {}
-  bool operator < (const Data &a) const {
-    return x > a.x;
+vi Str2Int(string &s) {
+  vi ret(s.size());
+  rep(i, 0, s.size()) {
+    ret[i] = (int)s[i] - '0';
   }
+  return ret;
 };
 
-vector<Edge> g[MAX_V];
-ll dp[MAX_V][MAX_S+5];
+const int INF = 1e9+7;
+int dp[1000005][2];
 
 int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
 
-  int n, m, s;
-  cin >> n >> m >> s;
+  string S;
+  cin >> S;
+  auto N = Str2Int(S);
+  reverse(All(N));
+  N.eb(0);
 
-  rep(i, 0, m) {
-    int u, v, a, b;
-    cin >> u >> v >> a >> b;
-    u--; v--;
-    g[u].eb(v, a, b);
-    g[v].eb(u, a, b);
-  }
-
-  vi c(n), d(n);
+  int n = N.size();
+  rep(i, 0, n+1) rep(j, 0, 2) dp[i][j] = INF;
+  dp[0][0] = 0;
   rep(i, 0, n) {
-    cin >> c[i] >> d[i];
-  }
-
-  rep(i, 0, n) {
-    rep(j, 0, MAX_S+5) dp[i][j] = INF;
-  }
-
-  s = min(s, MAX_S);
-
-  priority_queue<Data> pq;
-  auto push = [&](int v, int s, ll x) {
-    if (s < 0) return ;
-    if (dp[v][s] <= x) return ;
-    dp[v][s] = x;
-    pq.emplace(v, s, x);
-  };
-
-  push(0, s, 0);
-  while (!pq.empty()) {
-    Data hoge = pq.top(); pq.pop();
-    int v = hoge.v, s = hoge.s;
-    ll x = hoge.x;
-    if (dp[v][s] != x) continue;
-    {
-      int ns = min(s+c[v], MAX_S);
-      push(v, ns, x+d[v]);
-    }
-    for (Edge e: g[v]) {
-      push(e.to, s-e.a, x+e.b);
+    rep(j, 0, 2) {
+      int x = N[i];
+      x += j; // j=1のとき繰り下がり
+      if (x < 10) chmin(dp[i+1][0], dp[i][j]+x);
+      if (x > 0) chmin(dp[i+1][1], dp[i][j]+(10-x));
     }
   }
 
-  rep(i, 1, n) {
-    ll ans = INF;
-    rep(j, 0, MAX_S+5) {
-      chmin(ans, dp[i][j]);
-    }
-    cout << ans << endl;
-  }
-
+  int ans = dp[n][0];
+  // rep(i, 0, n+1) {
+  //   rep(j, 0, 2) {
+  //     cout << i << " " << j << " " << dp[i][j] << endl;
+  //   }
+  // }
+  cout << ans << endl;
 
   return 0;
 };
