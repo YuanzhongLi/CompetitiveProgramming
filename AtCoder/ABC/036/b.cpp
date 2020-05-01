@@ -81,38 +81,18 @@ int main() {
 
   int N;
   cin >> N;
-  int K;
-  cin >> K;
-
-  int ma = (N-1)*(N-2)/2;
-  if (K > ma) {
-    cout << -1 << endl;
-  } else {
-    set<PI> s_all;
-    rep(i, 1, N) {
-      rep(j, i+1, N+1) {
-        s_all.insert(make_pair(i, j));
-      }
+  vector<vector<char>> grid(N, vector<char> (N));
+  rep(i, 0, N) {
+    rep(j, 0, N) {
+      cin >> grid[i][j];
     }
+  }
 
-    set<PI> ans;
-    rep(i, 1, N) {
-      ans.insert(make_pair(i, N));
+  rep(i, 0, N) {
+    rep(j, 0, N) {
+      cout << grid[N-1-j][i];
     }
-
-    int cur = ma;
-
-    for (auto pi: s_all) {
-      if (cur == K) break;
-      if (Find(ans, pi)) continue;
-      ans.insert(pi);
-      cur--;
-    }
-
-    cout << ans.size() << endl;
-    for (auto pi: ans) {
-      cout << pi.first << " " << pi.second << endl;
-    }
+    cout << endl;
   }
 
   return 0;

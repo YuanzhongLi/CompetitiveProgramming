@@ -75,125 +75,40 @@ inline bool chmin(T &a, T b) {
   return false;
 };
 
-const ll INF = 1e18;
+int compress(int n, vi &X1) {
+  vector<int> xs;
+  rep(i, 0, n) {
+    xs.pb(X1[i]);
+  }
+
+  sort(All(xs));
+  xs.erase(unique(All(xs)), xs.end());
+  rep(i, 0, n) {
+    X1[i] = lbidx(xs, X1[i]);
+    // X1[i] = find(All(xs), X1[i]) - xs.begin();
+    // X2[i] = find(All(xs), X2[i]) - xs.begin();
+  }
+
+  return xs.size();
+};
 
 int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
 
-  ll n, k;
-  cin >> n >> k;
-  vl A(n);
-  ll zero_cnt = 0;
-  vl pos, neg;
+  int N;
+  cin >> N;
 
-  rep(i, 0, n) {
+  vi A(N);
+  rep(i, 0, N) {
     cin >> A[i];
-    if (A[i] == 0ll) zero_cnt++;
-    if (A[i] > 0ll) pos.pb(A[i]);
-    if (A[i] < 0ll) neg.pb(A[i]);
   }
 
-  sort(All(pos)); sort(All(neg));
+  compress(N, A);
 
-  ll tot_pair = n*(n-1ll)/2ll;
-  ll zero_pair = zero_cnt*(zero_cnt-1)/2ll + zero_cnt * (n - zero_cnt);
-
-  ll neg_pair = (ll)pos.size() * (ll)neg.size();
-  ll pos_pair = tot_pair - neg_pair - zero_pair;
-
-  if (k <= neg_pair) {
-    ll ok = -INF;
-    ll ng = 0;
-
-    bool flag;
-    auto check = [&] (ll mid) {
-      ll cnt = 0;
-      rep(i, 0, pos.size()) {
-        ll p = pos[i];
-        ll q = -((abs(mid-1)+p-1) / p) + 1;
-        ll idx = lbidx(neg, q);
-        cnt += idx;
-      }
-
-      if (cnt < k) {
-        flag = true;
-      } else {
-        flag = false;
-      }
-    };
-
-    while (abs(ok - ng) > 1ll) {
-      ll mid = (ok + ng) / 2ll;
-      check(mid);
-      if (flag) {
-        ok = mid;
-      } else {
-        ng = mid;
-      }
-    }
-
-    cout << ok << endl;
-
-  } else if (k <= neg_pair + zero_pair) {
-    cout << 0 << endl;
-  } else {
-    ll K = k - (neg_pair + zero_pair);
-
-    rep(i, 0, neg.size()) {
-      neg[i] = abs(neg[i]);
-    }
-
-    reverse(All(neg));
-
-    ll ok = 1;
-    ll ng = INF;
-
-
-
-    bool flag;
-    auto check = [&] (ll mid) {
-      ll pp_cnt = 0;
-      rep(i, 0, pos.size()) {
-        ll q = (mid - 1) / pos[i] + 1;
-        ll idx = lbidx(pos, q);
-        pp_cnt += idx;
-        if (pos[i] * pos[i] < mid) pp_cnt--;
-      }
-      pp_cnt /= 2ll;
-
-      ll nn_cnt = 0;
-      rep(i, 0, neg.size()) {
-        ll q = (mid - 1) / neg[i] + 1;
-        ll idx = lbidx(neg, q);
-        nn_cnt += idx;
-        if (neg[i] * neg[i] < mid) nn_cnt--;
-      }
-
-      nn_cnt /= 2ll;
-
-      ll cnt = pp_cnt + nn_cnt;
-      if (cnt < K) {
-        flag = true;
-      } else {
-        flag = false;
-      }
-    };
-
-    while (abs(ok - ng) > 1ll) {
-      ll mid = (ok + ng) / 2ll;
-      check(mid);
-      if (flag) {
-        ok = mid;
-      } else {
-        ng = mid;
-      }
-    }
-
-    cout << ok << endl;
+  for (int a: A) {
+    cout << a << endl;
   }
-
-
 
   return 0;
 };

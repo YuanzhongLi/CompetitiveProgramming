@@ -79,41 +79,11 @@ int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
 
-  int N;
-  cin >> N;
-  int K;
-  cin >> K;
+  int A, B;
+  cin >> A >> B;
+  cout << (B + A -1) / A << endl;
 
-  int ma = (N-1)*(N-2)/2;
-  if (K > ma) {
-    cout << -1 << endl;
-  } else {
-    set<PI> s_all;
-    rep(i, 1, N) {
-      rep(j, i+1, N+1) {
-        s_all.insert(make_pair(i, j));
-      }
-    }
 
-    set<PI> ans;
-    rep(i, 1, N) {
-      ans.insert(make_pair(i, N));
-    }
-
-    int cur = ma;
-
-    for (auto pi: s_all) {
-      if (cur == K) break;
-      if (Find(ans, pi)) continue;
-      ans.insert(pi);
-      cur--;
-    }
-
-    cout << ans.size() << endl;
-    for (auto pi: ans) {
-      cout << pi.first << " " << pi.second << endl;
-    }
-  }
 
   return 0;
 };
