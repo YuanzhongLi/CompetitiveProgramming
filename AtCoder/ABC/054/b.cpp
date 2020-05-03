@@ -75,39 +75,73 @@ inline bool chmin(T &a, T b) {
   return false;
 };
 
-int n, m, q;
-vi a(55), b(55), c(55), d(55);
-int ans = 0;
+void print() {
+  cout << endl;
+}
 
-void dfs (vi vec) {
-  if (vec.size() == n) {
-    int tmp = 0;
-    rep(i, 0, q) {
-      if (vec[b[i]] - vec[a[i]] == c[i]) tmp += d[i];
-    }
-    chmax(ans, tmp);
-    return ;
+template <class T>
+void print(vector<T> &vec) {
+  for (auto& a : vec) {
+    cout << a;
+    if (&a != &vec.back()) cout << " ";
   }
-  int last = vec.back();
-  rep(i, last, m+1) {
-    vi tmp = vec;
-    tmp.pb(i);
-    dfs(tmp);
+  cout << endl;
+}
+
+template <class T>
+void print(vector<T> &vec, ll k){
+   ll n = vec.size();
+   k = min(k, n);
+   rep(i, 0, k-1) cout << vec[i] << " ";
+   cout << vec[k-1] << endl;
+}
+
+template <class T>
+void print(vector<vector<T>> &df) {
+  for (auto& vec : df) {
+    print(vec);
   }
-};
+}
+
+template<class T, class U>
+void print(pair<T,U> &p){
+  cout << p.first << " " << p.second << "\n";
+}
 
 int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
-  cin >> n >> m >> q;
 
-  rep(i, 0, q) {
-    cin >> a[i] >> b[i] >> c[i] >> d[i];
-    a[i]--; b[i]--;
+  int n, m;
+  cin >> n >> m;
+
+  vector<vector<char>> A(n, vector<char> (n));
+  vector<vector<char>> B(m, vector<char> (m));
+  rep(i, 0, n) rep(j, 0, n) cin >> A[i][j];
+  rep(i, 0, m) rep(j, 0, m) cin >> B[i][j];
+
+  bool ok = false;
+  rep(i, 0, n) rep(j, 0, n) {
+    if (i + m <= n && j + m <= n) {
+      bool tmp = true;
+      rep(k, 0, m) rep(l, 0, m) {
+        if (A[i+k][j+l] != B[k][l]) {
+          tmp = false;
+          break;
+        }
+      }
+      if (tmp) {
+        ok = true;
+        break;
+      }
+    }
   }
-  vi v(1, 1);
-  dfs(v);
-  cout << ans << endl;
+
+  if (ok) {
+    cout << "Yes" << endl;
+  } else {
+    cout << "No" << endl;
+  }
 
   return 0;
 };

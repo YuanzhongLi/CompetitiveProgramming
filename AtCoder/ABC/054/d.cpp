@@ -75,39 +75,85 @@ inline bool chmin(T &a, T b) {
   return false;
 };
 
-int n, m, q;
-vi a(55), b(55), c(55), d(55);
-int ans = 0;
+void print() {
+  cout << endl;
+}
 
-void dfs (vi vec) {
-  if (vec.size() == n) {
-    int tmp = 0;
-    rep(i, 0, q) {
-      if (vec[b[i]] - vec[a[i]] == c[i]) tmp += d[i];
-    }
-    chmax(ans, tmp);
-    return ;
+template <class T>
+void print(vector<T> &vec) {
+  for (auto& a : vec) {
+    cout << a;
+    if (&a != &vec.back()) cout << " ";
   }
-  int last = vec.back();
-  rep(i, last, m+1) {
-    vi tmp = vec;
-    tmp.pb(i);
-    dfs(tmp);
+  cout << endl;
+}
+
+template <class T>
+void print(vector<T> &vec, ll k){
+   ll n = vec.size();
+   k = min(k, n);
+   rep(i, 0, k-1) cout << vec[i] << " ";
+   cout << vec[k-1] << endl;
+}
+
+template <class T>
+void print(vector<vector<T>> &df) {
+  for (auto& vec : df) {
+    print(vec);
   }
-};
+}
+
+template<class T, class U>
+void print(pair<T,U> &p){
+  cout << p.first << " " << p.second << "\n";
+}
+
+const int MAX_G = 405;
+const int INF = 1e9+7;
+vvvi dp(45, vvi(MAX_G, vi(MAX_G, INF)));
 
 int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
-  cin >> n >> m >> q;
 
-  rep(i, 0, q) {
-    cin >> a[i] >> b[i] >> c[i] >> d[i];
-    a[i]--; b[i]--;
+  int n, ma, mb;
+  cin >> n >> ma >> mb;
+  vi a(n+1), b(n+1), c(n+1);
+  rep(i, 1, n+1) {
+    cin >> a[i] >> b[i] >> c[i];
   }
-  vi v(1, 1);
-  dfs(v);
-  cout << ans << endl;
+
+  rep(i, 0, 45) dp[i][0][0] = 0;
+
+  rep(i, 1, n+1) {
+    rep(j, 0, MAX_G) {
+      rep(k, 0, MAX_G) {
+        if (j-a[i] >= 0  && k-b[i] >= 0) {
+          dp[i][j][k] = min(dp[i-1][j-a[i]][k-b[i]]+c[i], dp[i-1][j][k]);
+        } else {
+          dp[i][j][k] = dp[i-1][j][k];
+        }
+      }
+    }
+  }
+
+  int ans = INF;
+  rep(i, 1, n+1) {
+    rep(j, 1, MAX_G) {
+      rep(k, 1, MAX_G) {
+        if (j * mb == k * ma) {
+          chmin(ans, dp[i][j][k]);
+        }
+      }
+    }
+  }
+
+
+  if (ans >= INF) {
+    cout << -1 << endl;
+  } else {
+    cout << ans << endl;
+  }
 
   return 0;
 };

@@ -75,39 +75,84 @@ inline bool chmin(T &a, T b) {
   return false;
 };
 
-int n, m, q;
-vi a(55), b(55), c(55), d(55);
-int ans = 0;
+void print() {
+  cout << endl;
+}
 
-void dfs (vi vec) {
-  if (vec.size() == n) {
-    int tmp = 0;
-    rep(i, 0, q) {
-      if (vec[b[i]] - vec[a[i]] == c[i]) tmp += d[i];
-    }
-    chmax(ans, tmp);
-    return ;
+template <class T>
+void print(vector<T> &vec) {
+  for (auto& a : vec) {
+    cout << a;
+    if (&a != &vec.back()) cout << " ";
   }
-  int last = vec.back();
-  rep(i, last, m+1) {
-    vi tmp = vec;
-    tmp.pb(i);
-    dfs(tmp);
+  cout << endl;
+}
+
+template <class T>
+void print(vector<T> &vec, ll k){
+   ll n = vec.size();
+   k = min(k, n);
+   rep(i, 0, k-1) cout << vec[i] << " ";
+   cout << vec[k-1] << endl;
+}
+
+template <class T>
+void print(vector<vector<T>> &df) {
+  for (auto& vec : df) {
+    print(vec);
   }
+}
+
+template<class T, class U>
+void print(pair<T,U> &p){
+  cout << p.first << " " << p.second << "\n";
+}
+
+const int MAX_N = 200005;
+const int INF = 1e9+7;
+
+vi a(MAX_N), ans(MAX_N);
+vi graph[MAX_N];
+vi dp(MAX_N, INF);
+
+
+void dfs(int u, int p=-1) {
+  int i = lbidx(dp, a[u]);
+  int old = dp[i];
+  dp[i] = a[u];
+  ans[u] = lbidx(dp, INF) - 1; // dp[0] = -INF分を引く
+  /*
+    親の長さと挿入位置の大きい方をとる
+    ans[v] = i;
+    if (p != -1) ans[v] = max(ans[v], ans[p])
+  */
+  for (int v: graph[u]) {
+    if (v == p) continue;
+    dfs(v, u);
+  }
+  dp[i] = old;
 };
 
 int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
-  cin >> n >> m >> q;
 
-  rep(i, 0, q) {
-    cin >> a[i] >> b[i] >> c[i] >> d[i];
-    a[i]--; b[i]--;
+  int n; cin >> n;
+  rep(i, 0, n) cin >> a[i];
+  rep(i, 0, n-1) {
+    int u, v;
+    cin >> u >> v;
+    u--; v--;
+    graph[v].pb(u);
+    graph[u].pb(v);
   }
-  vi v(1, 1);
-  dfs(v);
-  cout << ans << endl;
+
+  dp[0] = -INF;
+  dfs(0);
+
+  rep(i, 0, n) {
+    cout << ans[i] << endl;
+  }
 
   return 0;
 };

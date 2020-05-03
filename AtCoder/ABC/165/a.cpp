@@ -79,5 +79,23 @@ int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
 
+  int K;
+  cin >> K;
+  bool ok = false;
+  int A, B;
+  cin >> A >> B;
+  rep(i, A, B+1) {
+    if (i % K == 0) {
+      ok = true;
+      break;
+    }
+  }
+
+  if (ok) {
+    cout << "OK" << endl;
+  } else {
+    cout << "NG" << endl;
+  }
+
   return 0;
 };

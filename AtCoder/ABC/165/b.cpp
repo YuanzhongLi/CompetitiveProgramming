@@ -75,9 +75,27 @@ inline bool chmin(T &a, T b) {
   return false;
 };
 
+double esp = 1e-8;
+
 int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
+
+  ll X;
+  cin >> X;
+  ll ans = 0;
+  double tmp = 100.0;
+  while (1) {
+    ans++;
+    tmp *= 1.01;
+    tmp += esp;
+    ll l_tmp = (ll) tmp;
+    if (l_tmp >= X) break;
+    tmp = (double) l_tmp;
+  }
+
+
+  cout << ans << endl;
 
   return 0;
 };

@@ -75,9 +75,84 @@ inline bool chmin(T &a, T b) {
   return false;
 };
 
+void print() {
+  cout << endl;
+}
+
+template <class T>
+void print(vector<T> &vec) {
+  for (auto& a : vec) {
+    cout << a;
+    if (&a != &vec.back()) cout << " ";
+  }
+  cout << endl;
+}
+
+template <class T>
+void print(vector<T> &vec, ll k){
+   ll n = vec.size();
+   k = min(k, n);
+   rep(i, 0, k-1) cout << vec[i] << " ";
+   cout << vec[k-1] << endl;
+}
+
+template <class T>
+void print(vector<vector<T>> &df) {
+  for (auto& vec : df) {
+    print(vec);
+  }
+}
+
+template<class T, class U>
+void print(pair<T,U> &p){
+  cout << p.first << " " << p.second << "\n";
+}
+
 int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
+
+  int N, M;
+  cin >> N >> M;
+
+  if (M & 1) {
+    int m = M;
+    int half_M = (M+1)/2;
+    for (int l = 1; l <= half_M; l++) {
+      if (m <= 0) break;
+      int r = M+2-l;
+      cout << l << " " << r << endl;
+      m--;
+    }
+
+    if (m <= 0) return 0;
+
+    for (int l = M+2; ;l++) {
+      if (m <= 0) break;
+      int r = (2*M+1) + (M+2) - l;
+      cout << l << " " << r << endl;
+      m--;
+    }
+  } else {
+    int m = M;
+    int half_M = M / 2;
+    rep(l, 1, half_M+1) {
+      if (m <= 0) break;
+      int r = M+1-l;
+      cout << l << " " << r << endl;
+      m--;
+    }
+
+    if (m <= 0) return 0;
+
+    for (int l = M+1; ;l++) {
+      if (m <= 0) break;
+      int r = 2 * M + 1 + M + 1 - l;
+      cout << l << " " << r << endl;
+      m--;
+    }
+  }
+
 
   return 0;
 };

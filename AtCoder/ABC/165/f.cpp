@@ -75,9 +75,112 @@ inline bool chmin(T &a, T b) {
   return false;
 };
 
+void print() {
+  cout << endl;
+}
+
+template <class T>
+void print(vector<T> &vec) {
+  for (auto& a : vec) {
+    cout << a;
+    if (&a != &vec.back()) cout << " ";
+  }
+  cout << endl;
+}
+
+template <class T>
+void print(vector<T> &vec, ll k){
+   ll n = vec.size();
+   k = min(k, n);
+   rep(i, 0, k-1) cout << vec[i] << " ";
+   cout << vec[k-1] << endl;
+}
+
+template <class T>
+void print(vector<vector<T>> &df) {
+  for (auto& vec : df) {
+    print(vec);
+  }
+}
+
+template<class T, class U>
+void print(pair<T,U> &p){
+  cout << p.first << " " << p.second << "\n";
+}
+
+vector<int> LIS(vector<int> &x, int s, int e) {
+  int INFTY = 1e9+7;
+  vector<int> ret(e - s, INFTY);
+  ret[0] = x[s];
+  int size = 1;
+  for (int i = s + 1; i < e; i++) {
+    int tmp = x[i];
+    // 注意: 以上、以下の場合 <= , >=となる
+    if (ret[size - 1] < tmp) {
+      ret[size++] = tmp;
+    } else {
+      // 注意: 以上、以下の場合upper_boundとなる
+      *lower_bound(ret.begin(), ret.end(), tmp) = tmp;
+    }
+  }
+  return vector<int> (ret.begin(), ret.begin()+size);
+};
+
+const int MAX_N = 200005;
+vi A(MAX_N);
+vvi graph(MAX_N);
+vector<bool> done(MAX_N, false);
+
+vvi dp(MAX_N);
+
+void solve() {
+  queue<int> q;
+  q.push(0);
+  dp[0].pb(A[0]);
+  while (!q.empty()) {
+    int u = q.front(); q.pop();
+    if (done[u]) continue;
+    done[u] = true;
+
+    for (int v: graph[u]) {
+      if (done[v]) continue;
+      dp[v] = dp[u];
+
+      if (A[v] > dp[u][dp[u].size()-1]) {
+        dp[v].pb(A[v]);
+      } else {
+        *lower_bound(dp[v].begin(), dp[v].end(), A[v]) = A[v];
+      }
+      q.push(v);
+    }
+  }
+};
+
+// TLEしてしまう
+
 int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
+
+  int N;
+  cin >> N;
+  rep(i, 0, N) {
+    cin >> A[i];
+  }
+
+  int u, v;
+  rep(i, 0, N-1) {
+    cin >> u >> v;
+    u--; v--;
+    graph[u].pb(v);
+    graph[v].pb(u);
+  }
+
+  solve();
+
+  rep(i, 0, N) {
+    cout << dp[i].size() << endl;
+  }
 
   return 0;
 };
