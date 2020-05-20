@@ -11,6 +11,7 @@ using namespace std;
 #define lbidx(x, y) lower_bound(x.begin(), x.end(), y) - x.begin()
 #define ubidx(x, y) upper_bound(x.begin(), x.end(), y) - x.begin()
 #define llbidx(x, y, z) lower_bound(x.begin(), x.end(), z) - lower_bound(x.begin(), x.end(), y) // 二要素間の距離
+// #define M_PI 3.14159265358979323846 // CFでは定義しておく必要あり
 #define deg2rad(deg) ((((double)deg)/((double)360)*2*M_PI))
 #define rad2deg(rad) ((((double)rad)/(double)2/M_PI)*(double)360)
 #define Find(set, element) set.find(element) != set.end()
@@ -73,6 +74,39 @@ inline bool chmin(T &a, T b) {
     return true;
   }
   return false;
+};
+
+void print() {
+  cout << endl;
+};
+
+template <class T>
+void print(vector<T> &vec) {
+  for (auto& a : vec) {
+    cout << a;
+    if (&a != &vec.back()) cout << " ";
+  }
+  cout << endl;
+};
+
+template <class T>
+void print(vector<T> &vec, ll k){
+   ll n = vec.size();
+   k = min(k, n);
+   rep(i, 0, k-1) cout << vec[i] << " ";
+   cout << vec[k-1] << endl;
+};
+
+template <class T>
+void print(vector<vector<T>> &df) {
+  for (auto& vec : df) {
+    print(vec);
+  }
+};
+
+template<class T, class U>
+void print(pair<T,U> &p){
+  cout << p.first << " " << p.second << "\n";
 };
 
 int main() {
