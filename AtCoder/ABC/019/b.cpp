@@ -1,8 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-#define rep(i,s,n) for (int i = (ll)s; i < (ll)n; i++)
-#define rrep(i,n,e) for (int i = (ll)n-1; i >= (ll)e; i--)
+#define rep(i,s,n) for (int i = (int)s; i < (int)n; i++)
 #define ll long long
 #define ld long double
 #define pb push_back
@@ -16,7 +15,7 @@ using namespace std;
 #define deg2rad(deg) ((((double)deg)/((double)360)*2*M_PI))
 #define rad2deg(rad) ((((double)rad)/(double)2/M_PI)*(double)360)
 #define Find(set, element) set.find(element) != set.end()
-#define Decimal(x) cout << fixed << setprecision(10) << x << endl; // 小数点を10桁まで表示
+#define Decimal(x) printf("%.10f\n", x) // 小数点を10桁まで表示
 // debug用
 #define PrintVec(x) for (auto elementPrintVec: x) { cout << elementPrintVec << " "; } cout << "\n";
 #define debug(x) cerr << #x << ": " << (x) << "\n";
@@ -110,9 +109,44 @@ void print(pair<T,U> &p){
   cout << p.first << " " << p.second << "\n";
 };
 
+pair<vector<char>, vector<int>> Block(string s) {
+  int num = 1;
+
+  vector<char> v1;
+  vector<int> v2;
+
+  rep (i, 0, s.size()) {
+    char c = s[i];
+    if (i == 0) {
+      v1.pb(c);
+    } else if (c == s[i - 1]) {
+      num++;
+    } else {
+      v2.pb(num);
+      v1.pb(c);
+      num = 1;
+    }
+
+    if (i == s.size() - 1) v2.pb(num);
+  }
+
+  return make_pair(v1, v2);
+};
+
 int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
+
+  string s;
+  cin >> s;
+  auto block = Block(s);
+  auto chs = block.first;
+  auto num = block.second;
+  rep(i, 0, chs.size()) {
+    cout << chs[i];
+    cout << num[i];
+  }
+  cout << endl;
 
   return 0;
 };

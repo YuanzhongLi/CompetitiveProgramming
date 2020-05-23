@@ -110,9 +110,126 @@ void print(pair<T,U> &p){
   cout << p.first << " " << p.second << "\n";
 };
 
+const ll MAX = 50+5;
+
+// エラトステネスの篩
+struct Sieve {
+  ll n;
+  vl f, primes;
+  Sieve(ll n = 1): n(n), f(n+1) {
+    f[0] = f[1] = -1ll;
+    for (ll i = 2; i <= n; i++) {
+      if (f[i]) continue;
+      primes.pb(i);
+      f[i] = i;
+      for (ll j = i*i; j <= n; j += i) {
+        if (!f[j]) f[j] = i; // jの最小の素因数
+      }
+    }
+  }
+
+  bool isPrime(int x) { return f[x] == x; }
+
+  // 素因数分解
+  vl factorList(ll x) {
+    vl res;
+    while (x != 1ll) {
+      res.pb(f[x]);
+      x /= f[x];
+    }
+    return res;
+  }
+
+  vpl factor(ll x) {
+    vl fl = factorList(x);
+    if (fl.size() == 0) return {};
+
+    vpl res(1, PLL(fl[0], 0));
+
+    for (int p: fl) {
+      if (res.back().first == p) {
+        res.back().second++;
+      } else {
+        res.emplace_back(p, 1);
+      }
+    }
+
+    return res;
+  }
+};
+
+Sieve si(MAX);
+
+ll comb(ll n, ll r) {
+  r = min<ll>(r, n-r);
+  ll ret = 1;
+  vl tmp(51, 0);
+  rep(i, n-r+1, n+1) {
+    auto f = si.factor(i);
+    for (auto pi: f) {
+      tmp[pi.first] += pi.second;
+    }
+  }
+  rep(i, 1, r+1) {
+    auto f = si.factor(i);
+    for (auto pi: f) {
+      tmp[pi.first] -= pi.second;
+    }
+  }
+  rep(i, 1, 51) {
+    ret *= POWLL(i, tmp[i]);
+  }
+  return ret;
+};
+
 int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
+
+  ll N, A, B; cin >> N >> A >> B;
+  vl V(N);
+  rep(i, 0, N) {
+    cin >> V[i];
+  }
+  sort(All(V));
+  reverse(All(V));
+
+  ll tot = 0;
+  for (ll i = 0; i < A; i++) {
+    tot += V[i];
+  }
+
+  double avg = (double)tot/(double)A;
+
+  ll l, r;
+  rep(i, 0, N) {
+    if (V[i] == V[A-1]) {
+      l = i;
+      break;
+    }
+  }
+
+  rrep(i, N, 0) {
+    if (V[i] == V[A-1]) {
+      r = i;
+      break;
+    }
+  }
+
+  ll a_num = r-l+1;
+  ll aa_num = A-1-l+1;
+  Decimal(avg);
+  ll ans = 0;
+  if (V[0] == V[A-1]) {
+    rep(i, A, B+1) {
+      if (i > a_num) break;
+      ans += comb(a_num, i);
+    }
+  } else {
+    ans = comb(a_num, aa_num);
+  }
+
+  cout << ans << endl;
 
   return 0;
 };

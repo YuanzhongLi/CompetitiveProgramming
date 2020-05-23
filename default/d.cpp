@@ -1,7 +1,8 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-#define rep(i,s,n) for (int i = (int)s; i < (int)n; i++)
+#define rep(i,s,n) for (int i = (ll)s; i < (ll)n; i++)
+#define rrep(i,n,e) for (int i = (ll)n-1; i >= (ll)e; i--)
 #define ll long long
 #define ld long double
 #define pb push_back
@@ -15,7 +16,7 @@ using namespace std;
 #define deg2rad(deg) ((((double)deg)/((double)360)*2*M_PI))
 #define rad2deg(rad) ((((double)rad)/(double)2/M_PI)*(double)360)
 #define Find(set, element) set.find(element) != set.end()
-#define Decimal(x) printf("%.10f\n", x) // 小数点を10桁まで表示
+#define Decimal(x) cout << fixed << setprecision(10) << x << endl; // 小数点を10桁まで表示
 // debug用
 #define PrintVec(x) for (auto elementPrintVec: x) { cout << elementPrintVec << " "; } cout << "\n";
 #define debug(x) cerr << #x << ": " << (x) << "\n";

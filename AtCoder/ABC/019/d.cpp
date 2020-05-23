@@ -1,8 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-#define rep(i,s,n) for (int i = (ll)s; i < (ll)n; i++)
-#define rrep(i,n,e) for (int i = (ll)n-1; i >= (ll)e; i--)
+#define rep(i,s,n) for (int i = (int)s; i < (int)n; i++)
 #define ll long long
 #define ld long double
 #define pb push_back
@@ -16,7 +15,7 @@ using namespace std;
 #define deg2rad(deg) ((((double)deg)/((double)360)*2*M_PI))
 #define rad2deg(rad) ((((double)rad)/(double)2/M_PI)*(double)360)
 #define Find(set, element) set.find(element) != set.end()
-#define Decimal(x) cout << fixed << setprecision(10) << x << endl; // 小数点を10桁まで表示
+#define Decimal(x) printf("%.10f\n", x) // 小数点を10桁まで表示
 // debug用
 #define PrintVec(x) for (auto elementPrintVec: x) { cout << elementPrintVec << " "; } cout << "\n";
 #define debug(x) cerr << #x << ": " << (x) << "\n";
@@ -111,8 +110,32 @@ void print(pair<T,U> &p){
 };
 
 int main() {
-  ios::sync_with_stdio(false);
-  cin.tie(0);
+  // ios::sync_with_stdio(false);
+  // cin.tie(0);
+
+  int N; cin >> N;
+  int v = 1;
+  int dist = 0;
+  for (int u = 2; u <= N; u++) {
+    cout << "? " << 1 << " " << u << endl;
+    int tmp;
+    cin >> tmp;
+    if (tmp > dist) {
+      dist = tmp;
+      v = u;
+    }
+  }
+
+  int ans = 0;
+  for (int u = 1; u <= N; u++) {
+    if (v == u) continue;
+    cout << "? " << v << " " << u << endl;
+    int tmp;
+    cin >> tmp;
+    chmax(ans, tmp);
+  }
+
+  cout << "! " << ans << endl;
 
   return 0;
 };
