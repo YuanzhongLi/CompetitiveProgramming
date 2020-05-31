@@ -38,11 +38,15 @@ typedef vector<vector<PLL>> vvpl;
 
 constexpr ll LINF = 1001002003004005006ll;
 constexpr int INF = 1001001001;
+constexpr int n_max = 2e5+10;
 
 template<class T>
 inline bool chmax(T &a, T b) { if(a < b) { a = b; return true; } return false; };
 template<class T>
 inline bool chmin(T &a, T b) { if(a > b) { a = b; return true; } return false; };
+
+template<class T, class U>
+T POW(T x, U n) {T ret = 1; while (n > 0) {if (n & 1) {ret *= x;} x *= x; n >>= 1;} return ret;};
 
 // debug
 template <typename A, typename B>
@@ -51,12 +55,19 @@ string to_string(const string &s) {return '"' + s + '"';};
 string to_string(const char c) {return to_string((string) &c);};
 string to_string(bool b) {return (b ? "true" : "false");};
 template <size_t N>
-string to_string(bitset<N> v){ string res = ""; for(size_t i = 0; i < N; i++) res += static_cast<char>('0' + v[i]); return res;};
+string to_string(bitset<N> v){
+  string res = "";
+  for(size_t i = 0; i < N; i++) res += static_cast<char>('0' + v[i]);
+  return res;
+};
 template <typename A>
 string to_string(A v) {
   bool first = true;
   string res = "{";
-  for(const auto &x : v) { if(!first) res += ", "; first = false; res += to_string(x); }
+  for(const auto &x : v) {
+    if(!first) res += ", ";
+    first = false; res += to_string(x);
+  }
   res += "}";
   return res;
 };
@@ -83,7 +94,7 @@ void Print(vector<T> &vec, ll k){
 template <class T>
 void Print(vector<vector<T>> &df) {for (auto& vec : df) {print(vec);}};
 template<class T, class U>
-void Print(pair<T,U> &p){cout << p.first << " " << p.second << "\n";};
+void Print(pair<T,U> &p){cout << p.first << " " << p.second << endl;};
 
 #ifdef LOCAL
 #define debug(...) cerr << "[" << #__VA_ARGS__ << "]:", debug_out(__VA_ARGS__)
@@ -92,10 +103,6 @@ void Print(pair<T,U> &p){cout << p.first << " " << p.second << "\n";};
 #define debug(...) 71
 #define print(...) 71
 #endif
-
-template<class T>
-T POW(T x, int n) {T ret = 1; while (n > 0) { if (n & 1) ret *= x; x *= x; n >>= 1; }
-return ret; };
 
 int main() {
   ios::sync_with_stdio(false);
