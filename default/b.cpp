@@ -35,6 +35,8 @@ typedef vector<PI> vpi;
 typedef vector<vector<PI>> vvpi;
 typedef vector<PLL> vpl;
 typedef vector<vector<PLL>> vvpl;
+typedef vector<char> vch;
+typedef vector<vector<char>> vvch;
 
 constexpr ll LINF = 1001002003004005006ll;
 constexpr int INF = 1001001001;
