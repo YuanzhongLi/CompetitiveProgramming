@@ -201,8 +201,6 @@ int main() {
 
   auto factor = si.factor(N);
   ll ans = 0;
-  if (factor.size() == 0) ans = 1;
-  if (N == 1ll) ans = 0;
 
   for (auto pi: factor) {
     ll num = pi.second;
