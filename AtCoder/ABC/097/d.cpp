@@ -106,96 +106,104 @@ void Print(pair<T,U> &p){cout << p.first << " " << p.second << endl;};
 #define print(...) 71
 #endif
 
-PI f(string s) {
-  int right = 0;
-  int n = s.size();
-  int left = 0;
-  rep(i, 0, n) {
-    if (s[i] == ')') {
-      if (right == 0) {
-        left++;
-      } else {
-        right--;
-      }
+#include <bits/stdc++.h>
+using namespace std;
+
+class Unionfind {
+public:
+  int N;
+  vector<int> par; // 節点
+  vector<int> rank; // 木の高さ
+  vector<int> size; // 節点が属する木の節点数
+  int treeNum; // 木の数
+  Unionfind(int N) : N(N), par(N), rank(N, 0), size(N, 1) {
+    for (int i = 0; i < N; i++) {
+      par[i] = i;
+    }
+    treeNum = N;
+  }
+  // 節点(木)追加
+  void addNode(int x) {
+    par[x] = x;
+    rank[x] = 0;
+    size[x] = 1;
+    treeNum++;
+  }
+  // 根を探すと同時に経路上にある節点の親が根になるように代入
+  int root(int x) {
+    return par[x] == x ? x : par[x] = root(par[x]);
+  }
+  // 同じ木に属しているか
+  bool same(int x, int y) {
+    return root(x) == root(y);
+  }
+  // rankが低い方の木をrankが高い方の木の根に結びつける(結びつけた後の新しい木の高さが高くなることがないため)
+  void unite(int x, int y) {
+    x = root(x);
+    y = root(y);
+    if (x == y) {
+      return;
+    }
+    treeNum--;
+    if (rank[x] < rank[y]) {
+      par[x] = y;
+      size[y] += size[x];
     } else {
-      right++;
+      par[y] = x;
+      size[x] += size[y];
+      if (rank[x] == rank[y]) {
+        rank[x] += 1;
+      }
     }
   }
 
-  return make_pair(left, right);
+  vector<vector<int>> group() { // O(N)
+    vector<vector<int>> res;
+    vector<vector<int>> table(N);
+    for (int i = 0; i < N; i++) {
+      table[root(i)].pb(i);
+    }
+    rep(i, 0, N) {
+      if (!table[i].empty()) {
+        res.pb(table[i]);
+      }
+    }
+    return res;
+  }
 };
 
 int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
 
-  int n; cin >> n;
-  vpi table(n);
-  rep(i, 0, n) {
-    string s; cin >> s;
-    table[i] = f(s);
+  int N, M; cin >> N >> M;
+
+  vi P(N), position(N);
+  Unionfind uf(N);
+  rep(i, 0, N) {
+    cin >> P[i]; P[i]--;
+    position[P[i]] = i;
   }
 
-  int cnt1 = 0, cnt2 = 0;
-  vpi table2;
-  int l_tot = 0, r_tot = 0;
+  rep(i, 0, M) {
+    int a, b; cin >> a >> b; a--; b--;
+    uf.unite(a, b);
+  }
+  vvi group = uf.group();
 
-  rep(i, 0, n) {
-    int l = table[i].first;
-    int r = table[i].second;
-    if (l == 0 && r == 0) {
-      continue;
-    } else if (l == 0) {
-      cnt1 += r;
-    } else if (r == 0) {
-      cnt2 += l;
-    } else {
-      l_tot += l;
-      r_tot += r;
-      table2.pb(table[i]);
+  int ans = 0;
+  for (vi g: group) {
+    set<int> s;
+    for (int i: g) {
+      s.insert(i);
+    }
+    for (int i: g) {
+      if (Find(s, P[i])) ans++;
     }
   }
 
-  if (cnt1 + r_tot != cnt2 + l_tot) {
-    cout << "No" << endl;
-    return 0;
-  }
+  cout << ans << endl;
 
-  if (table2.empty()) {
-    if (cnt1 == cnt2) {
-      cout << "Yes" << endl;
-    } else {
-      cout << "No" << endl;
-    }
-  } else if (table2.size() == 1) {
-    if (l_tot == cnt1 && r_tot == cnt2) {
-      cout << "Yes" << endl;
-    } else {
-      cout << "No" << endl;
-    }
-  } else {
-     set<int> ls, rs;
-    rep (i, 0, table2.size()) {
-      if (l_tot - r_tot + table2[i].second <= cnt1) ls.insert(i);
-      if (r_tot - l_tot + table2[i].first <= cnt2) rs.insert(i);
-    }
-
-    if (ls.size() > 0 && rs.size() > 0) {
-      if (ls.size() == 1 && rs.size() == 1) {
-        for (int el: ls) {
-          if (Find(rs, el)) {
-            cout << "No" << endl;
-          } else {
-            cout << "Yes" << endl;
-          }
-        }
-      } else {
-        cout << "Yes" << endl;
-      }
-    } else {
-      cout << "No" << endl;
-    }
-  }
 
   return 0;
 };

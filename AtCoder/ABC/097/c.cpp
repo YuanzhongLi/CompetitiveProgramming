@@ -106,96 +106,33 @@ void Print(pair<T,U> &p){cout << p.first << " " << p.second << endl;};
 #define print(...) 71
 #endif
 
-PI f(string s) {
-  int right = 0;
-  int n = s.size();
-  int left = 0;
-  rep(i, 0, n) {
-    if (s[i] == ')') {
-      if (right == 0) {
-        left++;
-      } else {
-        right--;
-      }
-    } else {
-      right++;
-    }
-  }
-
-  return make_pair(left, right);
-};
-
 int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
 
-  int n; cin >> n;
-  vpi table(n);
-  rep(i, 0, n) {
-    string s; cin >> s;
-    table[i] = f(s);
-  }
-
-  int cnt1 = 0, cnt2 = 0;
-  vpi table2;
-  int l_tot = 0, r_tot = 0;
-
-  rep(i, 0, n) {
-    int l = table[i].first;
-    int r = table[i].second;
-    if (l == 0 && r == 0) {
-      continue;
-    } else if (l == 0) {
-      cnt1 += r;
-    } else if (r == 0) {
-      cnt2 += l;
-    } else {
-      l_tot += l;
-      r_tot += r;
-      table2.pb(table[i]);
-    }
-  }
-
-  if (cnt1 + r_tot != cnt2 + l_tot) {
-    cout << "No" << endl;
-    return 0;
-  }
-
-  if (table2.empty()) {
-    if (cnt1 == cnt2) {
-      cout << "Yes" << endl;
-    } else {
-      cout << "No" << endl;
-    }
-  } else if (table2.size() == 1) {
-    if (l_tot == cnt1 && r_tot == cnt2) {
-      cout << "Yes" << endl;
-    } else {
-      cout << "No" << endl;
-    }
-  } else {
-     set<int> ls, rs;
-    rep (i, 0, table2.size()) {
-      if (l_tot - r_tot + table2[i].second <= cnt1) ls.insert(i);
-      if (r_tot - l_tot + table2[i].first <= cnt2) rs.insert(i);
-    }
-
-    if (ls.size() > 0 && rs.size() > 0) {
-      if (ls.size() == 1 && rs.size() == 1) {
-        for (int el: ls) {
-          if (Find(rs, el)) {
-            cout << "No" << endl;
-          } else {
-            cout << "Yes" << endl;
-          }
-        }
-      } else {
-        cout << "Yes" << endl;
+  string S; cin >> S;
+  int n = S.size();
+  int K; cin >> K;
+  set<string> s;
+  rep(i, 1, K+1) {
+    rep(j, 0, n-i+1) {
+      string tmp = "";
+      rep(k, j, j+i) {
+        tmp += S[k];
       }
-    } else {
-      cout << "No" << endl;
+      s.insert(tmp);
     }
   }
+
+
+
+  vector<string> ans;
+  for (string el: s) {
+    ans.pb(el);
+  }
+
+  sort(All(ans));
+  cout << ans[K-1] << endl;
 
   return 0;
 };
