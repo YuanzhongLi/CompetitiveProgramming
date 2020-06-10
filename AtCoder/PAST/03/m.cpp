@@ -106,9 +106,87 @@ void Print(pair<T,U> &p){cout << p.first << " " << p.second << endl;};
 #define print(...) 71
 #endif
 
+const int N_MAX = 100005;
+vvi graph(N_MAX);
+
+vi f(int s) {
+  vi dist(N_MAX, INF);
+  vector<bool> visited(N_MAX, false);
+  vi par(N_MAX, -1);
+
+  queue<int> q;
+  q.push(s);
+  dist[s] = 0;
+  while (!q.empty()) {
+    int u = q.front(); q.pop();
+    if (visited[u]) continue;
+    visited[u] = true;
+
+    for (int v: graph[u]) {
+      if (visited[v] || v == par[u]) continue;
+      chmin(dist[v], dist[u]+1);
+      q.push(v);
+    }
+  }
+
+  return dist;
+};
+
 int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
 
+  int N, M; cin >> N >> M;
+  rep(i, 0, M) {
+    int u, v; cin >> u >> v; u--; v--;
+    graph[u].pb(v);
+    graph[v].pb(u);
+  }
+
+  int s; cin >> s; s--;
+  int K; cin >> K;
+  map<int, int> table; table[s] = 0;
+  vi T; T.pb(s);
+  rep(i, 0, K) {
+    int t; cin >> t; t--; T.pb(t);
+    table[t] = i+1;
+  }
+
+  vvi graph2(K+1, vi(K+1, INF));
+  rep(i, 0, K+1) graph2[i][i] = 0;
+
+  rep(i, 0, K+1) {
+    auto dist = f(T[i]);
+    rep(j, 0, K+1) {
+      graph2[i][table[T[j]]] = dist[T[j]];
+      graph2[table[T[j]]][i] = dist[T[j]];
+    }
+  }
+
+  rep(k, 0, K+1) {
+    rep(i, 0, K+1) {
+      rep(j, 0, K+1) {
+        chmin(graph2[i][j], graph2[i][k]+graph2[k][j]);
+      }
+    }
+  }
+
+  int V = K+1;
+  vvi dp(1 << V, vi(V, INF));
+  rep(i, 1, V) {
+    dp[(1<<V)-1][i] = 0;
+  }
+
+  for (int S = (1 << V)-2; S >= 1; S--) {
+    rep(v, 0, V) {
+      rep(u, 0, V) {
+        if (!((S >> u)&1)) {
+          chmin(dp[S][v], dp[S | 1 << u][u]+graph2[v][u]);
+        }
+      }
+    }
+  }
+
+  cout << dp[1][0] << endl;
   return 0;
 };
