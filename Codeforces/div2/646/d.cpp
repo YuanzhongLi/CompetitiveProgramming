@@ -1,4 +1,4 @@
-#define LOCAL
+// #define LOCAL
 #ifdef LOCAL
 #define _GLIBCXX_DEBUG
 #endif
@@ -106,9 +106,97 @@ void Print(pair<T,U> &p){cout << p.first << " " << p.second << endl;};
 #define print(...) 71
 #endif
 
+void query(vi tmp) {
+  cout << "? " << tmp.size() << " ";
+  rep(i, 0, tmp.size()) {
+    cout << tmp[i];
+    if (i < tmp.size()-1) cout << " ";
+
+  }
+  cout << endl;
+};
+
+string solve() {
+  int n, k; cin >> n >> k;
+
+  vector<set<int>> sets(k);
+  rep(i, 0, k) {
+    int c; cin >> c;
+    rep(j, 0, c) {
+      int idx; cin >> idx;
+      sets[i].insert(idx);
+    }
+  }
+
+
+  vi ans(k);
+
+  // get max
+  int ma;
+  cout << "? " << n << " ";
+  rep(i, 1, n+1) {
+    cout << i;
+    if (i < n) cout << " ";
+  }
+  cout << endl;
+  cout.flush();
+  cin >> ma;
+
+  debug(ma);
+
+  int l = 0, r = k;
+  while (abs(r-l) > 1) {
+    int half = (r+l)/2;
+    vi tmp;
+    rep(i, l, half) {
+      for (int idx: sets[i]) {
+        tmp.pb(idx);
+      }
+    }
+    query(tmp);
+    cout.flush();
+    int tmp_ma; cin >> tmp_ma;
+    debug(tmp_ma);
+    if (tmp_ma == ma) {
+      rep(i, half, r) ans[i] = ma;
+      r = half;
+    } else {
+      rep(i, l, half) ans[i] = ma;
+      l = half;
+    }
+  }
+
+  vi tmp;
+  rep(i, 1, n+1) {
+    if (Find(sets[l], i)) continue;
+    tmp.pb(i);
+  }
+  query(tmp);
+  cout.flush();
+  int tmp_ma; cin >> tmp_ma;
+  ans[l] = tmp_ma;
+
+  // ans
+  cout << "! ";
+  rep(i, 0, k) {
+    cout << ans[i];
+    if (i < k-1) cout << " ";
+  }
+  cout << endl;
+  cout.flush();
+  string ret; cin >> ret;
+  return ret;
+};
+
 int main() {
-  ios::sync_with_stdio(false);
-  cin.tie(0);
+  // ios::sync_with_stdio(false);
+  // cin.tie(0);
+
+  int t; cin >> t;
+  while (t--) {
+    string res = solve();
+    if (res == "Incorrect") break;
+  }
 
   return 0;
 };
