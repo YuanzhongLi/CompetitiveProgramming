@@ -81,10 +81,16 @@ void debug_out() {cerr << endl;};
 template<typename Head, typename... Tail>
 void debug_out(Head H, Tail... T) { cerr << " " << to_string(H); debug_out(T...); };
 
+void LINE_OUT() {
+  cout << "--------------" << endl;
+};
+
 #ifdef LOCAL
 #define debug(...) cerr << "[" << #__VA_ARGS__ << "]:", debug_out(__VA_ARGS__)
+#define LINE LINE_OUT();
 #else
 #define debug(...) 71
+#define LINE 71;
 #endif
 
 void print() { cout << endl; }
