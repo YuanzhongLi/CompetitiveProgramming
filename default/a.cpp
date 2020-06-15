@@ -31,6 +31,7 @@ typedef vector<vector<int>> vvi;
 typedef vector<vector<vector<int>>> vvvi;
 typedef vector<ll> vl;
 typedef vector<vector<ll>> vvl;
+typedef vector<vector<vector<ll>>> vvvl;
 typedef vector<PI> vpi;
 typedef vector<vector<PI>> vvpi;
 typedef vector<PLL> vpl;
@@ -43,12 +44,12 @@ constexpr int INF = 1001001001;
 constexpr int n_max = 2e5+10;
 
 template<class T>
-inline bool chmax(T &a, T b) { if(a < b) { a = b; return true; } return false; };
+inline bool chmax(T &a, T b) { if(a<b) { a=b; return true; } return false; };
 template<class T>
-inline bool chmin(T &a, T b) { if(a > b) { a = b; return true; } return false; };
+inline bool chmin(T &a, T b) { if(a>b) { a=b; return true; } return false; };
 
 template<class T, class U>
-T POW(T x, U n) {T ret = 1; while (n > 0) {if (n & 1) {ret *= x;} x *= x; n >>= 1;} return ret;};
+T POW(T x, U n) {T ret=1; while (n>0) {if (n&1) {ret*=x;} x*=x; n>>=1;} return ret;};
 
 // debug
 template <typename A, typename B>
@@ -80,31 +81,35 @@ void debug_out() {cerr << endl;};
 template<typename Head, typename... Tail>
 void debug_out(Head H, Tail... T) { cerr << " " << to_string(H); debug_out(T...); };
 
-void Print() { cout << endl; };
-template <class T>
-void Print(vector<T> &vec) {
-  for (auto& a : vec) {cout << a; if (&a != &vec.back()) cout << " ";}
-  cout << endl;
-};
-template <class T>
-void Print(vector<T> &vec, ll k){
-   ll n = vec.size();
-   k = min(k, n);
-   rep(i, 0, k-1) cout << vec[i] << " ";
-   cout << vec[k-1] << endl;
-};
-template <class T>
-void Print(vector<vector<T>> &df) {for (auto& vec : df) {print(vec);}};
-template<class T, class U>
-void Print(pair<T,U> &p){cout << p.first << " " << p.second << endl;};
-
 #ifdef LOCAL
 #define debug(...) cerr << "[" << #__VA_ARGS__ << "]:", debug_out(__VA_ARGS__)
-#define print(...) Print(__VA_ARGS__)
 #else
 #define debug(...) 71
-#define print(...) 71
 #endif
+
+void print() { cout << endl; }
+template <class Head, class... Tail>
+void print(Head&& head, Tail&&... tail) {
+  cout << head;
+  if (sizeof...(tail) != 0) cout << " ";
+  print(forward<Tail>(tail)...);
+};
+
+template <class T>
+void print(vector<T> &vec) {
+  for (auto& a : vec) {
+    cout << a;
+    if (&a != &vec.back()) cout << " ";
+  }
+  cout << endl;
+};
+
+template <class T>
+void print(vector<vector<T>> &df) {
+  for (auto& vec : df) {
+    print(vec);
+  }
+};
 
 int main() {
   ios::sync_with_stdio(false);
