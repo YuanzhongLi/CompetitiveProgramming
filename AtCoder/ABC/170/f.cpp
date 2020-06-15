@@ -80,6 +80,10 @@ void debug_out() {cerr << endl;};
 template<typename Head, typename... Tail>
 void debug_out(Head H, Tail... T) { cerr << " " << to_string(H); debug_out(T...); };
 
+void LINE_OUT() {
+  cout << "--------------" << endl;
+};
+
 void Print() { cout << endl; };
 template <class T>
 void Print(vector<T> &vec) {
@@ -98,12 +102,16 @@ void Print(vector<vector<T>> &df) {for (auto& vec : df) {print(vec);}};
 template<class T, class U>
 void Print(pair<T,U> &p){cout << p.first << " " << p.second << endl;};
 
+
+
 #ifdef LOCAL
 #define debug(...) cerr << "[" << #__VA_ARGS__ << "]:", debug_out(__VA_ARGS__)
 #define print(...) Print(__VA_ARGS__)
+#define LINE LINE_OUT();
 #else
 #define debug(...) 71
 #define print(...) 71
+#define LINE 71;
 #endif
 
 int main() {
@@ -111,31 +119,13 @@ int main() {
   cin.tie(0);
 
   int H, W, K; cin >> H >> W >> K;
-  int x1, y1, x2, y2; cin >> x1 >> y1 >> x2 >> y2;
+  int x1, y1, x2, y2; cin >> y1 >> x1 >> y2 >> x2;
   x1--; y1--; x2--; y2--;
-
-  vvi table_row(H), table_col(W);
 
   vvch grid(H, vch(W));
   rep(i, 0, H) rep(j, 0, W) cin >> grid[i][j];
 
-  rep(i, 0, H) {
-    table_row[i].pb(-1);
-    rep(j, 0, W) {
-      if (grid[i][j] == '@') table_row[i].pb(j);
-    }
-    table_row[i].pb(INF);
-  }
-
-  rep(i, 0, W) {
-    table_col[i].pb(-1);
-    rep(j, 0, H) {
-      if (grid[j][i] == '@') table_col[i].pb(j);
-    }
-    table_col[i].pb(INF);
-  }
-
-  int s = x1*W+y1, e = x2*W+y2;
+  int s = y1*W+x1, e = y2*W+x2;
   vi dist(H*W, INF);
   vector<bool> visited(H*W, false);
   dist[s] = 0;
@@ -151,49 +141,43 @@ int main() {
     int uy = u / W;
     int ux = u % W;
 
-    { // 南北
-      int ng = -1, ok = table_col[ux].size()-1;
-      while (abs(ok-ng) > 1) {
-        int mid = (ok+ng)/2;
-        if (table_col[ux][mid] > uy) {
-          ok = mid;
-        } else {
-          ng = mid;
-        }
-      }
-
-      int up = max(max(0, table_col[ux][ok-1]+1), uy-K);
-      int down = min(min(H-1, table_col[ux][ok]-1), uy+K);
-
-      for (int i = up; i <= down; i++) {
+    { // north
+      for (int i = uy-1; i >= max(0, uy-K); i--) {
         int v = i*W+ux;
-        if (visited[v] || dist[v] < INF) continue;
+        if (dist[v] <= dist[u] || grid[i][ux] == '@') break;
         dist[v] = dist[u]+1;
         q.push(v);
       }
     }
 
-    { // 東西
-      int ng = -1, ok = table_row[uy].size()-1;
-      while (abs(ok-ng) > 1) {
-        int mid = (ok+ng)/2;
-        if (table_row[uy][mid] > ux) {
-          ok = mid;
-        } else {
-          ng = mid;
-        }
+    { // south
+      for (int i = uy+1; i <= min(H-1, uy+K); i++) {
+        int v = i*W+ux;
+        if (dist[v] <= dist[u] || grid[i][ux] == '@') break;
+        dist[v] = dist[u]+1;
+        q.push(v);
       }
+    }
 
-      int west = max(max(0, table_row[uy][ok-1]+1), ux-K);
-      int east = min(min(W-1, table_row[uy][ok]-1), ux+K);
-
-      for (int i = west; i <= east; i++) {
+    { // east
+      for (int i = ux+1; i <= min(W-1, ux+K); i++) {
         int v = uy*W+i;
-        if (visited[v] || dist[v] < INF) continue;
+        if (dist[v] <= dist[u] || grid[uy][i] == '@') break;
         dist[v] = dist[u]+1;
         q.push(v);
       }
     }
+
+    { // west
+      for (int i = ux-1; i >= max(0, ux-K); i--) {
+        int v = uy*W+i;
+        if (dist[v] <= dist[u] || grid[uy][i] == '@') break;
+        dist[v] = dist[u]+1;
+        q.push(v);
+      }
+    }
+
+    LINE;
   }
 
 
