@@ -144,6 +144,14 @@ public:
   mint operator / (const mint a)  const { return mint(*this) /= a; }
 };
 
+mint fact[200005];
+void init(ll mod) {
+  fact[0] = mint(1, mod);
+  for (ll i = 1; i < 200005ll; i++) {
+    fact[i] = fact[i-1] * mint(i, mod);
+  }
+};
+
 
 int main() {
   ios::sync_with_stdio(false);
