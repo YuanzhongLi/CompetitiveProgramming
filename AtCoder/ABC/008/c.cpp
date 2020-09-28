@@ -1,0 +1,217 @@
+// #define LOCAL
+#ifdef LOCAL
+#define _GLIBCXX_DEBUG
+#endif
+#include <bits/stdc++.h>
+using namespace std;
+
+#define rep(i,s,n) for (int i = (ll)s; i < (ll)n; i++)
+#define rrep(i,n,e) for (int i = (ll)n; i > (ll)e; i--)
+#define ll long long
+#define ld long double
+#define pb push_back
+#define eb emplace_back
+#define All(x) x.begin(), x.end()
+#define Range(x, i, j) x.begin() + i, x.begin() + j
+// #define M_PI 3.14159265358979323846 // CF
+#define deg2rad(deg) ((((double)deg)/((double)360)*2*M_PI))
+#define rad2deg(rad) ((((double)rad)/(double)2/M_PI)*(double)360)
+#define Find(set, element) set.find(element) != set.end()
+#define Decimal(x) cout << fixed << setprecision(10) << x << endl; // print Decimal number 10 Rank
+#define endl "\n"
+#define Case(x) printf("Case #%d: ", x); // gcj
+
+typedef pair<int, int> PI;
+typedef pair<ll, ll> PLL;
+typedef vector<int> vi;
+typedef vector<vector<int>> vvi;
+typedef vector<vector<vector<int>>> vvvi;
+typedef vector<ll> vl;
+typedef vector<vector<ll>> vvl;
+typedef vector<vector<vector<ll>>> vvvl;
+typedef vector<PI> vpi;
+typedef vector<vector<PI>> vvpi;
+typedef vector<PLL> vpl;
+typedef vector<vector<PLL>> vvpl;
+typedef vector<char> vch;
+typedef vector<vector<char>> vvch;
+
+constexpr ll LINF = 1001002003004005006ll;
+constexpr int INF = 1001001001;
+constexpr int n_max = 2e5+10;
+
+template<class T>
+inline bool chmax(T &a, T b) { if(a<b) { a=b; return true; } return false; };
+template<class T>
+inline bool chmin(T &a, T b) { if(a>b) { a=b; return true; } return false; };
+
+template<class T, class U>
+T POW(T x, U n) {T ret=1; while (n>0) {if (n&1) {ret*=x;} x*=x; n>>=1;} return ret;};
+
+// debug
+template <typename A, typename B>
+string to_string(pair<A, B> p);
+string to_string(const string &s) {return '"' + s + '"';};
+string to_string(const char c) {return to_string((string) &c);};
+string to_string(bool b) {return (b ? "true" : "false");};
+template <size_t N>
+string to_string(bitset<N> v){
+  string res = "";
+  for(size_t i = 0; i < N; i++) res += static_cast<char>('0' + v[i]);
+  return res;
+};
+template <typename A>
+string to_string(A v) {
+  bool first = true;
+  string res = "{";
+  for(const auto &x : v) {
+    if(!first) res += ", ";
+    first = false; res += to_string(x);
+  }
+  res += "}";
+  return res;
+};
+template <typename A, typename B>
+string to_string(pair<A, B> p){return "(" + to_string(p.first) + ", " + to_string(p.second) + ")";}
+
+void debug_out() {cerr << endl;};
+template<typename Head, typename... Tail>
+void debug_out(Head H, Tail... T) { cerr << " " << to_string(H); debug_out(T...); };
+
+void LINE_OUT() {
+  cout << "--------------" << endl;
+};
+
+#ifdef LOCAL
+#define debug(...) cerr << "[" << #__VA_ARGS__ << "]:", debug_out(__VA_ARGS__)
+#define LINE LINE_OUT();
+#else
+#define debug(...) 71
+#define LINE 71;
+#endif
+
+void print() { cout << endl; }
+template <class Head, class... Tail>
+void print(Head&& head, Tail&&... tail) {
+  cout << head;
+  if (sizeof...(tail) != 0) cout << " ";
+  print(forward<Tail>(tail)...);
+};
+
+template <class T>
+void print(vector<T> &vec) {
+  for (auto& a : vec) {
+    cout << a;
+    if (&a != &vec.back()) cout << " ";
+  }
+  cout << endl;
+};
+
+template <class T>
+void print(vector<vector<T>> &df) {
+  for (auto& vec : df) {
+    print(vec);
+  }
+};
+
+set<int> Divisor(int n) {
+  vector<int> ret;
+  for(int i = 1; i * i <= n; i++) {
+    if(n % i == 0) {
+      ret.push_back(i);
+      if(i * i != n) ret.push_back(n / i);
+    }
+  }
+  set<int> s;
+  for (auto num: ret) s.insert(num);
+  return s;
+};
+
+int main() {
+  ios::sync_with_stdio(false);
+  cin.tie(0);
+
+  int N; cin >> N;
+  vi C(N);
+  rep(i, 0, N) cin >> C[i];
+
+  auto fac = [&](int n) { // n!
+    vi ret(N+1);
+    rep(i, 2, n+1) ret[i] = 1;
+    return ret;
+  };
+
+  auto ncr_son = [&](int n, int r) { // nCr numerator
+    if (n-r < r) r = n-r;
+    vi ret(N+1);
+    rep(i, n-r+1, n+1) ret[i] = 1;
+    return ret;
+  };
+
+  auto ncr_mom = [&](int n, int r) { // nCr denominator
+    if (n-r < r) r = n-r;
+    vi ret(N+1);
+    rep(i, 2, r+1) ret[i] = 1;
+    return ret;
+  };
+
+  auto calc = [&](vi &son, vi &mom) { // get long double
+    ld ret = 1.0;
+    rep(i, 2, N+1) {
+      if (son[i]) {
+        ret *= POW((ld)i, son[i]);
+      }
+
+      if (mom[i]) {
+        ret /= POW((ld)i, mom[i]);
+      }
+    }
+
+    return ret;
+  };
+
+  ld ans = 0.0;
+
+  rep(i, 0, N) {
+    int c = C[i];
+    set<int> dis = Divisor(c);
+    int num = -1;
+    rep(j, 0, N) {
+      int c2 = C[j];
+      if (Find(dis, c2)) num++;
+    }
+
+    if (num == 0) {
+      ans += 1.0;
+      continue;
+    }
+
+    int a = num/2+1;
+    int b = N-num-1;
+    int d = num+1;
+    vi son(N+1, 0);
+    vi mom = fac(N);
+    son[a]++;
+    vi b_v = fac(b);
+    vi d_v_son = ncr_son(N, d);
+    vi d_v_mom = ncr_mom(N, d);
+    vi num_v = fac(num);
+    rep(i, 0, N+1) {
+      son[i] += b_v[i] + d_v_son[i] + num_v[i];
+      mom[i] += d_v_mom[i];
+      if (son[i] > mom[i]) {
+        son[i] -= mom[i];
+        mom[i] = 0;
+      } else {
+        mom[i] -= son[i];
+        son[i] = 0;
+      }
+    }
+
+    ans += calc(son, mom);
+  }
+
+  Decimal(ans);
+
+  return 0;
+};
