@@ -13,14 +13,11 @@ using namespace std;
 #define eb emplace_back
 #define All(x) x.begin(), x.end()
 #define Range(x, i, j) x.begin() + i, x.begin() + j
-#define lbidx(x, y) lower_bound(x.begin(), x.end(), y) - x.begin()
-#define ubidx(x, y) upper_bound(x.begin(), x.end(), y) - x.begin()
-#define llbidx(x, y, z) lower_bound(x.begin(), x.end(), z) - lower_bound(x.begin(), x.end(), y) // dist between two elements
 // #define M_PI 3.14159265358979323846 // CF
 #define deg2rad(deg) ((((double)deg)/((double)360)*2*M_PI))
 #define rad2deg(rad) ((((double)rad)/(double)2/M_PI)*(double)360)
 #define Find(set, element) set.find(element) != set.end()
-#define Decimal(x) cout << fixed << setprecision(10) << x << endl; // 小数点を10桁まで表示
+#define Decimal(x) cout << fixed << setprecision(10) << x << endl; // print Decimal number 10 Rank
 #define endl "\n"
 #define Case(x) printf("Case #%d: ", x); // gcj
 
@@ -81,10 +78,16 @@ void debug_out() {cerr << endl;};
 template<typename Head, typename... Tail>
 void debug_out(Head H, Tail... T) { cerr << " " << to_string(H); debug_out(T...); };
 
+void LINE_OUT() {
+  cout << "--------------" << endl;
+};
+
 #ifdef LOCAL
 #define debug(...) cerr << "[" << #__VA_ARGS__ << "]:", debug_out(__VA_ARGS__)
+#define LINE LINE_OUT();
 #else
 #define debug(...) 71
+#define LINE 71;
 #endif
 
 void print() { cout << endl; }
@@ -111,79 +114,26 @@ void print(vector<vector<T>> &df) {
   }
 };
 
-vector<int> Divisor(int n) {
-  vector<int> ret;
-  for(int i = 1; i * i <= n; i++) {
-    if(n % i == 0) {
-      ret.push_back(i);
-      if(i * i != n) ret.push_back(n / i);
-    }
-  }
-  sort(All(ret));
-  reverse(All(ret));
-  return (ret);
-};
-
-void solve() {
-  int n, x, y; cin >> n >> x >> y;
-  int diff = y-x;
-  int space = n-1;
-  auto divs = Divisor(diff);
-
-  int d = 1;
-  for (int div: divs) {
-    if (div <= space) {
-      d = div;
-      break;
-    }
-  }
-
-  int d_ = diff / d;
-
-  deque<int> ans;
-  ans.pb(x);
-  rep(i, 0, d) {
-    ans.pb(x+d_*(i+1));
-  }
-
-  int total = d+1;
-  int cnt = 1;
-  while (total < n) {
-    int prev = x - d_*cnt;
-    if (prev > 0) {
-      ans.push_front(prev);
-      total++;
-      cnt++;
-    } else {
-      break;
-    }
-  }
-
-  cnt = 1;
-  while (total < n) {
-    int next = y + d_ * cnt;
-    ans.push_back(next);
-    total++;
-    cnt++;
-  }
-
-  rep(i, 0, ans.size()) {
-    cout << ans[i];
-    if (i < ans.size()-1) {
-      cout << " ";
-    }
-  }
-  cout << endl;
+ll only_c(ll num) {
+  return num / 4;
 };
 
 int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
 
-  int t; cin >> t;
-  while (t--) {
-    solve();
+  ll N, M; cin >> N >> M;
+  ll ans = 0;
+
+  if (M >= 2 * N) {
+    ans += N;
+    M -= 2*N;
+    ans += only_c(M);
+  } else {
+    ans += M/2;
   }
+
+  cout << ans << endl;
 
   return 0;
 };

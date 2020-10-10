@@ -13,14 +13,11 @@ using namespace std;
 #define eb emplace_back
 #define All(x) x.begin(), x.end()
 #define Range(x, i, j) x.begin() + i, x.begin() + j
-#define lbidx(x, y) lower_bound(x.begin(), x.end(), y) - x.begin()
-#define ubidx(x, y) upper_bound(x.begin(), x.end(), y) - x.begin()
-#define llbidx(x, y, z) lower_bound(x.begin(), x.end(), z) - lower_bound(x.begin(), x.end(), y) // dist between two elements
 // #define M_PI 3.14159265358979323846 // CF
 #define deg2rad(deg) ((((double)deg)/((double)360)*2*M_PI))
 #define rad2deg(rad) ((((double)rad)/(double)2/M_PI)*(double)360)
 #define Find(set, element) set.find(element) != set.end()
-#define Decimal(x) cout << fixed << setprecision(10) << x << endl; // 小数点を10桁まで表示
+#define Decimal(x) cout << fixed << setprecision(10) << x << endl; // print Decimal number 10 Rank
 #define endl "\n"
 #define Case(x) printf("Case #%d: ", x); // gcj
 
@@ -81,10 +78,16 @@ void debug_out() {cerr << endl;};
 template<typename Head, typename... Tail>
 void debug_out(Head H, Tail... T) { cerr << " " << to_string(H); debug_out(T...); };
 
+void LINE_OUT() {
+  cout << "--------------" << endl;
+};
+
 #ifdef LOCAL
 #define debug(...) cerr << "[" << #__VA_ARGS__ << "]:", debug_out(__VA_ARGS__)
+#define LINE LINE_OUT();
 #else
 #define debug(...) 71
+#define LINE 71;
 #endif
 
 void print() { cout << endl; }
@@ -111,20 +114,18 @@ void print(vector<vector<T>> &df) {
   }
 };
 
-void solve() {
-  int a, b; cin >> a >> b;
-  int diff = abs(a - b);
-  cout << (diff+9)/10 << endl;
-};
-
 int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
-  int t; cin >> t;
-  while (t--) {
-    solve();
+
+  ll N; cin >> N;
+  ll ans = 1;
+  rep(i, 0, N) {
+    ans *= (i+1);
+    ans %= 1000000007;
   }
 
+  cout << ans << endl;
 
   return 0;
 };

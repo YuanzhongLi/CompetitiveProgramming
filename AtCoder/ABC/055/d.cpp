@@ -13,14 +13,11 @@ using namespace std;
 #define eb emplace_back
 #define All(x) x.begin(), x.end()
 #define Range(x, i, j) x.begin() + i, x.begin() + j
-#define lbidx(x, y) lower_bound(x.begin(), x.end(), y) - x.begin()
-#define ubidx(x, y) upper_bound(x.begin(), x.end(), y) - x.begin()
-#define llbidx(x, y, z) lower_bound(x.begin(), x.end(), z) - lower_bound(x.begin(), x.end(), y) // dist between two elements
 // #define M_PI 3.14159265358979323846 // CF
 #define deg2rad(deg) ((((double)deg)/((double)360)*2*M_PI))
 #define rad2deg(rad) ((((double)rad)/(double)2/M_PI)*(double)360)
 #define Find(set, element) set.find(element) != set.end()
-#define Decimal(x) cout << fixed << setprecision(10) << x << endl; // 小数点を10桁まで表示
+#define Decimal(x) cout << fixed << setprecision(10) << x << endl; // print Decimal number 10 Rank
 #define endl "\n"
 #define Case(x) printf("Case #%d: ", x); // gcj
 
@@ -81,10 +78,16 @@ void debug_out() {cerr << endl;};
 template<typename Head, typename... Tail>
 void debug_out(Head H, Tail... T) { cerr << " " << to_string(H); debug_out(T...); };
 
+void LINE_OUT() {
+  cout << "--------------" << endl;
+};
+
 #ifdef LOCAL
 #define debug(...) cerr << "[" << #__VA_ARGS__ << "]:", debug_out(__VA_ARGS__)
+#define LINE LINE_OUT();
 #else
 #define debug(...) 71
+#define LINE 71;
 #endif
 
 void print() { cout << endl; }
@@ -111,51 +114,82 @@ void print(vector<vector<T>> &df) {
   }
 };
 
-void fna (ll a, ll b, ll x, ll y, ll n) {
-  ll diff_ax = a-x, diff_by = b-y;
-  if (n >= diff_ax) {
-    a = x;
-    n -= diff_ax;
-    if (n >= diff_by) {
-      b = y;
-    } else {
-      b -= n;
-    }
-  } else {
-    a -= n;
-  }
-
-  cout << a * b << endl;
+char reverse(char ch) {
+  if (ch == 'S') return 'W';
+  return 'S';
 };
 
-void solve() {
-  ll a, b, x, y, n; cin >> a >> b >> x >> y >> n;
-  if (a < b) {
-    swap(a, b);
-    swap(x, y);
-  }
+bool solve(char fi, char la, deque<char> &s) {
+  int N = s.size()-2;
+  bool ok = true;
+  deque<char> ans(N+2, 'T');
+  ans[1] = ans[N+1] = fi;
+  ans[0] = ans[N] = la;
 
-  ll diff_ax = a-x, diff_by = b-y, diff_ay = a-y;
+  rep(i, 1, N+1) {
+    char left = ans[i-1];
+    char right = ans[i+1];
 
-  if (x >= y) {
-    fna(b, a, y, x, n);
-  } else {
-    if (n >= diff_ay) {
-      fna(a, b, x, y, n);
-    } else {
-      fna(b, a, y, x, n);
+    if (ans[i] == 'S') { // i: sheep
+      if (s[i] == 'o') {
+        if (right == 'T') {
+          ans[i+1] = left;
+        } else if (left != right) {
+          ok = false; break;
+        }
+      }
+
+      if (s[i] == 'x') {
+        if (right == 'T') {
+          ans[i+1] = reverse(left);
+        } else if (left == right) {
+          ok = false; break;
+        }
+      }
+    } else { // i: wolf
+      if (s[i] == 'o') {
+        if (right == 'T') {
+          ans[i+1] = reverse(left);
+        } else if (left == right) {
+          ok = false; break;
+        }
+      }
+
+      if (s[i] == 'x') {
+        if (right == 'T') {
+          ans[i+1] = left;
+        } else if (left != right) {
+          ok = false; break;
+        }
+      }
     }
   }
+
+  if (ok && ans[1] == ans[N+1] && ans[0] == ans[N]) {
+    rep(i, 1, N+1) cout << ans[i]; cout << endl;
+    return true;
+  }
+
+  return false;
 };
 
 int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
 
-  int t; cin >> t;
-  while (t--) {
-    solve();
+  int N; cin >> N;
+
+  deque<char> s(N+2);
+  rep(i, 1, N+1) {
+    cin >> s[i];
   }
+
+  if (solve('S', 'S', s)) return 0;
+  if (solve('S', 'W', s)) return 0;
+  if (solve('W', 'S', s)) return 0;
+  if (solve('W', 'W', s)) return 0;
+
+  cout << -1 << endl;
 
   return 0;
 };

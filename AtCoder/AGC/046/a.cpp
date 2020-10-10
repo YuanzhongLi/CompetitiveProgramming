@@ -111,76 +111,14 @@ void print(vector<vector<T>> &df) {
   }
 };
 
-vector<int> baseNumberLL(ll N, int digits, ll x) {
-  vector<int> ret(digits, 0);
-  // 商
-  ll quotient = x;
-  int counter = 0;
-  while (quotient) {
-    // 余り
-    ll remainder = quotient % (int)N;
-    quotient /= N;
-    ret[counter] = (int)remainder;
-    counter++;
-  }
-
-  return ret;
-};
-
-vl ten(19, 0);
-void init_ten() {
-  ten[0] = 1;
-  rep(i, 1, 19) {
-    ten[i] = ten[i-1]*10;
-  }
-};
-
-ll calc_sum(vi b) {
-  ll sum = 0;
-  rep(i, 0, b.size()) sum += b[i];
-  return sum;
-};
-
-void solve() {
-  ll n, s; cin >> n >> s;
-  auto b = baseNumberLL(10, 19, n);
-  ll sum = 0;
-  rep(i, 0, b.size()) {
-    sum += b[i];
-  }
-  ll ans = 0;
-
-  if (sum <= s) {
-    cout << ans << endl;
-    return;
-  }
-
-  rep(i, 0, 19) {
-    ll num = 10-b[i];
-    ll plus = num * ten[i];
-    ans += plus;
-    n += plus;
-    b = baseNumberLL(10, 19, n);
-    sum = calc_sum(b);
-    if (sum <= s) {
-      cout << ans << endl;
-      return;
-    }
-  }
-
-  return;
-};
-
 int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
 
-  init_ten();
-
-  int t; cin >> t;
-  while (t--) {
-    solve();
-  }
+  int x; cin >> x;
+  int g = __gcd(x, 360);
+  int lcm = x * 360 / g;
+  cout << lcm / x << endl;
 
   return 0;
 };
