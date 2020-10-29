@@ -117,6 +117,50 @@ void print(vector<vector<T>> &df) {
 int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
+  
+  int R, C, K; cin >> R >> C >> K;
+  vvl grid(R, vl(C, 0));
+  vvvl dp(R, vvl(C, vl(4, 0)));
+  rep(i, 0, K) {
+    ll l, c, v;
+    cin >> l >> c >> v;
+    l--; c--;
+    grid[l][c] = v;
+  }
+  
+  dp[0][0][1] = grid[0][0];
+  rep(r, 0, R) {
+    rep(c, 0, C) {
+      { // 0
+        rep(i, 0, 4) {
+          if (r-1 >= 0) chmax(dp[r][c][0], dp[r-1][c][i]);
+        }
+        if (c-1 >= 0) chmax(dp[r][c][0], dp[r][c-1][0]);
+      }
+      { // 1
+        rep(i, 0, 4) {
+          if (r-1 >= 0) chmax(dp[r][c][1], dp[r-1][c][i] + grid[r][c]);
+        }
+        if (c-1 >= 0) chmax(dp[r][c][1], dp[r][c-1][0]+grid[r][c]);
+        if (c-1 >= 0) chmax(dp[r][c][1], dp[r][c-1][1]);        
+      }
+      { // 2
+        if (c-1 >= 0) chmax(dp[r][c][2], dp[r][c-1][1]+grid[r][c]);
+        if (c-1 >= 0) chmax(dp[r][c][2], dp[r][c-1][2]);
+      }
+      { // 3
+        if (c-1 >= 0) chmax(dp[r][c][3], dp[r][c-1][2]+grid[r][c]);
+        if (c-1 >= 0) chmax(dp[r][c][3], dp[r][c-1][3]);
+      }
+    }
+  }
+  
+  ll ans = 0;
+  rep(i, 0, 4) {
+    chmax(ans, dp[R-1][C-1][i]);
+  }
+  
+  cout << ans << endl;
 
   return 0;
 };
