@@ -1,4 +1,4 @@
-// #define LOCAL
+#define LOCAL
 #ifdef LOCAL
 #define _GLIBCXX_DEBUG
 #endif
@@ -36,7 +36,7 @@ typedef vector<vector<PLL>> vvpl;
 typedef vector<char> vch;
 typedef vector<vector<char>> vvch;
 
-constexpr ll LINF = 1001002003004005006ll;
+constexpr ll LINF = 8001002003004005006ll;
 constexpr int INF = 1002003004;
 constexpr int n_max = 2e5+10;
 
@@ -118,44 +118,32 @@ int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
 
-  ll N; cin >> N;
-  vvi graph(2*n_max);
-  rep(i, 0, N) {
-    int x, y; cin >> x >> y;
-    x--; y--;
-    y+=n_max;
-    graph[x].pb(y);
-    graph[y].pb(x);
-  }
-
-  vector<bool> visit(2*n_max, false);
+  ll X, Y, A, B; cin >> X >> Y >> A >> B;
+  ll x = X; // 強さ
   ll ans = 0;
 
-  rep(i, 0, n_max) {
-    if (visit[i]) continue;
-    ll X = 0, Y = 0;
-    queue<int> q;
-    q.push(i);
-    while (!q.empty()) {
-      int u = q.front(); q.pop();
-      if (visit[u]) continue;
-      visit[u] = true;
-      if (u < n_max) {
-        X++;
+  while (1) {
+    if ((ld)x * (ld)A > INF) {
+      ll diff = Y - x -1;
+      if (diff <= 0) break;
+      ans += (diff/B);
+      break;
+    } else if (x * A > Y-1) {
+      ll diff = Y - x -1;
+      if (diff <= 0) break;
+      ans += (diff/B);
+      break;
+    } else {
+      if (x * A <= x + B) {
+        x = x * A;
+        ans++;
       } else {
-        Y++;
-      }
-
-      for (int v: graph[u]) {
-        if (visit[v]) continue;
-        q.push(v);
+        ll diff = x * A - x;
+        ans += (diff/B);
+        x = x + (diff/B) * B;
       }
     }
-
-    ans += X * Y;
   }
-
-  ans -= N;
 
   cout << ans << endl;
 

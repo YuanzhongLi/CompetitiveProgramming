@@ -1,4 +1,4 @@
-// #define LOCAL
+#define LOCAL
 #ifdef LOCAL
 #define _GLIBCXX_DEBUG
 #endif
@@ -118,47 +118,18 @@ int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
 
+  set<ll> se;
   ll N; cin >> N;
-  vvi graph(2*n_max);
-  rep(i, 0, N) {
-    int x, y; cin >> x >> y;
-    x--; y--;
-    y+=n_max;
-    graph[x].pb(y);
-    graph[y].pb(x);
-  }
-
-  vector<bool> visit(2*n_max, false);
-  ll ans = 0;
-
-  rep(i, 0, n_max) {
-    if (visit[i]) continue;
-    ll X = 0, Y = 0;
-    queue<int> q;
-    q.push(i);
-    while (!q.empty()) {
-      int u = q.front(); q.pop();
-      if (visit[u]) continue;
-      visit[u] = true;
-      if (u < n_max) {
-        X++;
-      } else {
-        Y++;
-      }
-
-      for (int v: graph[u]) {
-        if (visit[v]) continue;
-        q.push(v);
-      }
+  rep(i, 1, 1000001) {
+    if (N % i == 0) {
+      se.insert(i);
+      se.insert(N / i);
     }
-
-    ans += X * Y;
   }
 
-  ans -= N;
-
-  cout << ans << endl;
-
+  for (ll a: se) {
+    cout << a << endl;
+  }
 
   return 0;
 };

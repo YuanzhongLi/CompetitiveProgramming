@@ -1,4 +1,4 @@
-// #define LOCAL
+#define LOCAL
 #ifdef LOCAL
 #define _GLIBCXX_DEBUG
 #endif
@@ -118,47 +118,32 @@ int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
 
-  ll N; cin >> N;
-  vvi graph(2*n_max);
+  int N; cin >> N;
+  vvi cord(N, vi(3, INF));
+  rep(i, 0, N) rep(j, 0, 3) cin >> cord[i][j];
+
+  vvi dist(N, vi(N, INF));
   rep(i, 0, N) {
-    int x, y; cin >> x >> y;
-    x--; y--;
-    y+=n_max;
-    graph[x].pb(y);
-    graph[y].pb(x);
+    rep(j, 0, N) {
+      dist[i][j] = abs(cord[i][0]-cord[j][0]) + abs(cord[i][1]-cord[j][1]) + max(0, cord[j][2]-cord[i][2]);
+    }
   }
 
-  vector<bool> visit(2*n_max, false);
-  ll ans = 0;
+  vvi dp(1 << N, vi(N, INF));
 
-  rep(i, 0, n_max) {
-    if (visit[i]) continue;
-    ll X = 0, Y = 0;
-    queue<int> q;
-    q.push(i);
-    while (!q.empty()) {
-      int u = q.front(); q.pop();
-      if (visit[u]) continue;
-      visit[u] = true;
-      if (u < n_max) {
-        X++;
-      } else {
-        Y++;
-      }
+  dp[(1 << N)-1][0] = 0;
 
-      for (int v: graph[u]) {
-        if (visit[v]) continue;
-        q.push(v);
+  for (int S = (1 << N) - 2; S >= 0; S--) {
+    rep(v, 0, N) {
+      rep(u, 0, N) {
+        if (!((S >> u) & 1)) { // まだ訪れてない点
+          dp[S][v] = min(dp[S][v], dp[S | 1 << u][u] + dist[v][u]);
+        }
       }
     }
-
-    ans += X * Y;
   }
 
-  ans -= N;
-
-  cout << ans << endl;
-
+  cout << dp[0][0] << endl;
 
   return 0;
 };
