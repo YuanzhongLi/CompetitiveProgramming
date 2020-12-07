@@ -1,4 +1,4 @@
-#define LOCAL
+// #define LOCAL
 #ifdef LOCAL
 #define _GLIBCXX_DEBUG
 #endif
@@ -37,7 +37,7 @@ typedef vector<char> vch;
 typedef vector<vector<char>> vvch;
 
 constexpr ll LINF = 1001002003004005006ll;
-constexpr int INF = 1001001001;
+constexpr int INF = 1002003004;
 constexpr int n_max = 2e5+10;
 
 template<class T>
@@ -114,9 +114,52 @@ void print(vector<vector<T>> &df) {
   }
 };
 
+vi check(int n, int p) {
+  vi ret;
+  int i = 0;
+  while (n) {
+    if (n&1) ret.pb(i);
+    n >>= 1;
+    i++;
+  }
+  return ret;
+};
+
 int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
+
+  int N, M, P, Q, R; cin >> N >> M >> P >> Q >> R;
+
+  vvi Z(N, vi(M, 0));
+  rep(i, 0, R) {
+    int x, y, z; cin >> x >> y;
+    x--; y--;
+    cin >> Z[x][y];
+  }
+
+  int ans = 0;
+  rep(i, 0, 1 << N) {
+    vi girls = check(i, P);
+    if (girls.size() != P) continue;
+    priority_queue<int> pq;
+    rep(m, 0, M) {
+      int tmp = 0;
+      for (auto g: girls) {
+        tmp += Z[g][m];
+      }
+      pq.push(tmp);
+    }
+
+    int tmp = 0;
+    rep(i, 0, Q) {
+      tmp += pq.top();
+      pq.pop();
+    }
+    chmax(ans, tmp);
+  }
+
+  cout << ans << endl;
 
   return 0;
 };
