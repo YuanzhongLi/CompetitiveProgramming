@@ -118,10 +118,5 @@ int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
 
-  vi v(4);
-  rep(i, 0, 4) cin >> v[i];
-  sort(All(v));
-  cout << v[0] << endl;
-
   return 0;
 };

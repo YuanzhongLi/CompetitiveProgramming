@@ -118,5 +118,31 @@ int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
 
+  int N, M; cin >> N >> M;
+  vi A;
+  A.pb(-1); A.pb(N);
+  rep(i, 0, M) {
+    int a; cin >> a; a--; A.pb(a);
+  }
+  sort(All(A));
+
+  int k = N;
+  rep(i, 1, M+2) {
+    int diff = A[i]-A[i-1]-1;
+    if (diff > 0) {
+      chmin(k, diff);
+    }
+  }
+  int ans = 0;
+  rep(i, 1, M+2) {
+    int diff = A[i]-A[i-1]-1;
+    if (diff > 0) {
+      ans += (diff+k-1)/k;
+    }
+  }
+
+  cout << ans << endl;
+
+
   return 0;
 };

@@ -114,9 +114,104 @@ void print(vector<vector<T>> &df) {
   }
 };
 
+const ll MAX = 1e6+5;
+
+// エラトステネスの篩
+class Sieve {
+public:
+  ll n;
+  vl f, primes;
+  Sieve() {}
+  Sieve(ll n = 1): n(n), f(n+1) {
+    f[0] = f[1] = -1ll;
+    for (ll i = 2; i <= n; i++) {
+      if (f[i]) continue;
+      primes.pb(i);
+      f[i] = i;
+      for (ll j = i*i; j <= n; j += i) {
+        if (!f[j]) f[j] = i; // jの最小の素因数
+      }
+    }
+  }
+
+  bool isPrime(int x) { return f[x] == x; }
+
+  // 素因数分解 (x > MAXの時MAX*MAXまで求められるO(1~MAXまでの素数の数))
+  vl factorList(ll x) {
+    if (x > MAX) {
+      vl res;
+      int idx = 0;
+      while (x > 1) {
+        ll p = primes[idx];
+        if (x % p == 0) {
+          x /= p;
+          res.pb(p);
+        } else {
+          idx++;
+        }
+        if (idx >= (int)primes.size()) break;
+      }
+
+      if (x > 1) res.pb(x);
+      return res;
+    } else {
+      vl res;
+      while (x != 1ll) {
+        res.pb(f[x]);
+        x /= f[x];
+      }
+      return res;
+    }
+  }
+
+  vpl factor(ll x) {
+    vl fl = factorList(x);
+    if (fl.size() == 0) return {};
+
+    vpl res(1, PLL(fl[0], 0));
+
+    for (int p: fl) {
+      if (res.back().first == p) {
+        res.back().second++;
+      } else {
+        res.emplace_back(p, 1);
+      }
+    }
+
+    return res;
+  }
+};
+
 int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
+
+  Sieve si(MAX);
+  ll L; cin >> L;
+  map<ll, ll> mom, son;
+  rep(i, 1, 12) {
+    vpl m_ = si.factor(L-i);
+    vpl s_ = si.factor(i);
+    for (auto pi: m_) {
+      mom[pi.first] += pi.second;
+    }
+    for (auto pi: s_) {
+      son[pi.first] += pi.second;
+    }
+  }
+
+  for (auto pi: son) {
+    mom[pi.first] -= pi.second;
+  }
+
+  ll ans = 1;
+  for (auto pi: mom) {
+    rep(i, 0, pi.second) {
+      ans *= pi.first;
+    }
+  }
+
+  cout << ans << endl;
 
   return 0;
 };

@@ -1,4 +1,4 @@
-#define LOCAL
+// #define LOCAL
 #ifdef LOCAL
 #define _GLIBCXX_DEBUG
 #endif
@@ -114,9 +114,91 @@ void print(vector<vector<T>> &df) {
   }
 };
 
+template<class I, class BiOp>
+class SegTree {
+  int n;
+  std::vector<I> dat;
+  BiOp op;
+  I e;
+public:
+  SegTree(int n_, BiOp op, I e) : op(op), e(e) {
+    n = 1;
+    while (n < n_) { n *= 2; } // n is a power of 2
+    dat.resize(2 * n);
+    for (int i = 0; i < 2 * n - 1; i++) {
+      dat[i] = e;
+    }
+  }
+  /* ary[k] <- v */
+  void update(int k, I v) {
+    k += n - 1;
+    dat[k] = v;
+    while (k > 0) {
+      k = (k - 1) / 2;
+      dat[k] = op(dat[2 * k + 1], dat[2 * k + 2]);
+    }
+  }
+  void update_array(const vector<I> vals, int k=0) {
+    for (int i = 0; i < vals.size(); ++i) {
+      update(k + i, vals[i]);
+    }
+  }
+  // Updates all elements. O(n)
+  void update_all(const I *vals, int len) {
+    for (int k = 0; k < std::min(n, len); ++k) {
+      dat[k + n - 1] = vals[k];
+    }
+    for (int k = std::min(n, len); k < n; ++k) {
+      dat[k + n - 1] = e;
+    }
+    for (int b = n / 2; b >= 1; b /= 2) {
+      for (int k = 0; k < b; ++k) {
+	      dat[k + b - 1] = op(dat[k * 2 + b * 2 - 1], dat[k * 2 + b * 2]);
+      }
+    }
+  }
+  // l,r are for simplicity
+  I querySub(int a, int b, int k, int l, int r) const {
+    if (a >= b) return e; // case by case
+    if (r <= a || b <= l) return e;
+    if (a <= l && r <= b) return dat[k];
+    I vl = querySub(a, b, 2 * k + 1, l, (l + r) / 2);
+    I vr = querySub(a, b, 2 * k + 2, (l + r) / 2, r);
+    return op(vl, vr);
+  }
+  // [a, b)
+  I query(int a, int b) const {
+    return querySub(a, b, 0, 0, n);
+  }
+};
+
+struct XOR {
+  int operator() (int a, int b) const {
+    return a^b;
+  }
+};
+
 int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
+
+  int N, Q; cin >> N >> Q;
+  SegTree<int, XOR> st(N+5, XOR(), 0);
+  rep(i, 1, N+1) {
+    int a; cin >> a;
+    st.update(i, a);
+  }
+
+
+  rep(i, 0, Q) {
+    int t, x, y; cin >> t >> x >> y;
+    if (t==1) {
+      int cur = st.query(x, x+1);
+      st.update(x, cur^y);
+    } else {
+      cout << st.query(x, y+1) << endl;
+    }
+  }
 
   return 0;
 };

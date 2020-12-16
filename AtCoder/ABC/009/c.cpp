@@ -114,14 +114,55 @@ void print(vector<vector<T>> &df) {
   }
 };
 
+int check(string &S, string &S_) {
+  int n = S.size();
+  int ret = 0;
+  rep(i, 0, n) {
+    if (S[i] != S_[i]) ret++;
+  }
+  return ret;
+};
+
 int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
 
-  vi v(4);
-  rep(i, 0, 4) cin >> v[i];
-  sort(All(v));
-  cout << v[0] << endl;
+  int N, K; cin >> N >> K;
+  string S; cin >> S;
 
+  vi cnt(26);
+  for (char c: S) cnt[c-'a']++;
+
+  auto check = [&](int x, string c) {
+    int k = 0;
+    vi tmp = cnt;
+    rep(i, 0, x) {
+      if (S[i] != c[i]) k++;
+      tmp[c[i]-'a']--;
+    }
+    rep(i, x, N) {
+      if (tmp[S[i]-'a']) tmp[S[i]-'a']--;
+      else k++;
+    }
+
+    return k <= K;
+  };
+
+  string ans;
+  vi tmp = cnt;
+  rep(i, 0, N) {
+    rep(alpha, 0, 26) {
+      if (tmp[alpha]) {
+        char c = alpha+'a';
+        if (check(i+1, ans+c)) {
+          ans+=c;
+          tmp[alpha]--;
+          break;
+        }
+      }
+    }
+  }
+
+  cout << ans << endl;
   return 0;
 };

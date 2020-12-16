@@ -118,5 +118,28 @@ int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
 
+  int N, M, T; cin >> N >> M >> T;
+  int N_ = N;
+  bool ok = true;
+  vi A(M+1,0), B(M+1,0);
+  rep(i, 0, M) cin >> A[i+1] >> B[i+1];
+  A.pb(T); B.pb(T);
+
+  rep(i, 1, M+2) {
+    N -= A[i]-B[i-1];
+    if (N < 1) {
+      ok = false;
+      break;
+    }
+    N += B[i]-A[i];
+    N = min(N, N_);
+  }
+
+  if (ok) {
+    cout << "Yes" << endl;
+  } else {
+    cout << "No" << endl;
+  }
+
   return 0;
 };
