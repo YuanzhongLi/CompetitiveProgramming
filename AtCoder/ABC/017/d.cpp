@@ -1,4 +1,4 @@
-#define LOCAL
+// #define LOCAL
 #ifdef LOCAL
 #define _GLIBCXX_DEBUG
 #endif
@@ -37,7 +37,7 @@ typedef vector<char> vch;
 typedef vector<vector<char>> vvch;
 
 constexpr ll LINF = 1001002003004005006ll;
-constexpr int INF = 1001001001;
+constexpr int INF = 1002003004;
 constexpr int n_max = 2e5+10;
 
 template<class T>
@@ -114,9 +114,152 @@ void print(vector<vector<T>> &df) {
   }
 };
 
+template<std::int_fast64_t Modulus>
+class modint {
+  using i64 = int_fast64_t;
+
+  public:
+  i64 a;
+
+  constexpr modint(const i64 x = 0) noexcept {
+    this -> a = x % Modulus;
+    if(a < 0){
+      a += Modulus;
+    }
+  }
+  // constexpr i64 &value() const noexcept {return a;}
+  constexpr const i64 &value() const noexcept {return a;}
+  constexpr modint operator+(const modint rhs) const noexcept {
+    return modint(*this) += rhs;
+  }
+  constexpr modint operator-(const modint rhs) const noexcept {
+    return modint(*this) -= rhs;
+  }
+  constexpr modint operator*(const modint rhs) const noexcept {
+    return modint(*this) *= rhs;
+  }
+  constexpr modint operator/(const modint rhs) const noexcept {
+    return modint(*this) /= rhs;
+  }
+  constexpr modint &operator+=(const modint rhs) noexcept {
+    a += rhs.a;
+    if(a >= Modulus) {
+      a -= Modulus;
+    }
+    return *this;
+  }
+  constexpr modint &operator-=(const modint rhs) noexcept {
+    if(a < rhs.a) {
+      a += Modulus;
+    }
+    a -= rhs.a;
+    return *this;
+  }
+  constexpr modint &operator*=(const modint rhs) noexcept {
+    a = a * rhs.a % Modulus;
+    return *this;
+  }
+  constexpr modint &operator/=(modint rhs) noexcept {
+    i64 a_ = rhs.a, b = Modulus, u = 1, v = 0;
+    while(b){
+      i64 t = a_/b;
+      a_ -= t * b; swap(a_,b);
+      u -= t * v; swap(u,v);
+    }
+    a = a * u % Modulus;
+    if(a < 0) a += Modulus;
+    return *this;
+  }
+
+  constexpr bool operator==(const modint rhs) noexcept {
+    return a == rhs.a;
+  }
+  constexpr bool operator!=(const modint rhs) noexcept {
+    return a != rhs.a;
+  }
+  constexpr bool operator>(const modint rhs) noexcept {
+    return a > rhs.a;
+  }
+  constexpr bool operator>=(const modint rhs) noexcept {
+    return a >= rhs.a;
+  }
+  constexpr bool operator<(const modint rhs) noexcept {
+    return a < rhs.a;
+  }
+  constexpr bool operator<=(const modint rhs) noexcept {
+    return a <= rhs.a;
+  }
+  template<typename T>
+  friend constexpr modint modpow(const modint &mt, T n) noexcept {
+    if(n < 0){
+      modint t = (modint(1) / mt);
+      return modpow(t, -n);
+    }
+    modint res = 1, tmp = mt;
+    while(n){
+      if(n & 1)res *= tmp;
+      tmp *= tmp;
+      n /= 2;
+    }
+    return res;
+  }
+};
+
+const long long MOD = 1e9+7;
+using mint = modint<MOD>;
+// iostream
+std::ostream &operator<<(std::ostream &out, const modint<MOD> &m) {
+  out << m.a; return out;
+};
+std::istream &operator>>(std::istream &in, modint<MOD> &m) {
+  long long a; in >> a; m = mint(a); return in;
+};
+
 int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
+
+  int N, M; cin >> N >> M;
+  vi F(N);
+  rep(i, 0, N) cin >> F[i];
+
+  F.pb(-1);
+  set<int> s;
+  int id1 = F.size()-1, id2 = F.size()-2;
+
+  vi left(F.size());
+  while (id1 >= 0) {
+    if (id2 < 0) {
+      F[id1] = 0;
+      id1--;
+    } else if (Find(s, F[id2])) {
+      left[id1] = id2+1;
+      id1--;
+      if (id1 >= 0) s.erase(F[id1]);
+    } else {
+      s.insert(F[id2]);
+      id2--;
+    }
+  }
+
+  debug(left);
+
+  vector<mint> dp(F.size()), sum(F.size());
+  dp[0] = mint(1);
+  sum[0] = mint(1);
+
+  rep(i, 1, F.size()) {
+    if (left[i] == 0) {
+      dp[i] = sum[i-1];
+    } else {
+      dp[i] = sum[i-1] - sum[left[i]-1];
+    }
+
+    sum[i] = sum[i-1] + dp[i];
+  }
+
+
+  cout << dp[F.size()-1] << endl;
 
   return 0;
 };
