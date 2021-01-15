@@ -118,18 +118,12 @@ int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
 
-  int N, S, T; cin >> N >> S >> T;
-  vi A(N);
-  rep(i, 0, N) cin >> A[i];
-  int ans = 0;
-  int W = A[0];
-  A[0] = 0;
-  rep(i, 0, N) {
-    W += A[i];
-    if (S <= W && W <= T) ans++;
+  int q; cin >> q;
+  if (q == 1) {
+    cout << "ABC" << endl;
+  } else {
+    cout << "chokudai" << endl;
   }
-
-  cout << ans << endl;
 
   return 0;
 };

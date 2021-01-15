@@ -114,22 +114,43 @@ void print(vector<vector<T>> &df) {
   }
 };
 
+typedef pair<ld, ld> P;
+bool compare_y(P a, P b) {
+  return a.second < b.second;
+};
+
 int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
 
-  int N, S, T; cin >> N >> S >> T;
-  vi A(N);
-  rep(i, 0, N) cin >> A[i];
-  int ans = 0;
-  int W = A[0];
-  A[0] = 0;
+  int N; cin >> N;
+  vector<P> A(N), B(N);
+  rep(i, 0, N) cin >> A[i].first >> A[i].second;
+  rep(i, 0, N) cin >> B[i].first >> B[i].second;
+
+  P ga(0, 0), gb(0, 0);
   rep(i, 0, N) {
-    W += A[i];
-    if (S <= W && W <= T) ans++;
+    ga.first += A[i].first;
+    ga.second += A[i].second;
+    gb.first += B[i].first;
+    gb.second += B[i].second;
   }
 
-  cout << ans << endl;
+  ga.first /= (ld)N;
+  ga.second /= (ld)N;
+  gb.first /= (ld)N;
+  gb.second /= (ld)N;
+
+  ld a_max = 0.0, b_max = 0.0;
+  rep(i, 0, N) {
+    ld a_dx = A[i].first - ga.first, a_dy = A[i].second - ga.second;
+    ld b_dx = B[i].first - gb.first, b_dy = B[i].second - gb.second;
+    chmax(a_max, sqrt(a_dx*a_dx+a_dy*a_dy));
+    chmax(b_max, sqrt(b_dx*b_dx+b_dy*b_dy));
+  }
+
+  ld ans = b_max / a_max;
+  Decimal(ans);
 
   return 0;
 };

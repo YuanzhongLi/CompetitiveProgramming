@@ -1,4 +1,4 @@
-#define LOCAL
+// #define LOCAL
 #ifdef LOCAL
 #define _GLIBCXX_DEBUG
 #endif
@@ -114,22 +114,84 @@ void print(vector<vector<T>> &df) {
   }
 };
 
+ll H, W, T;
+vvch grid(10, vch(10));
+vvpl graph;
+int dy[4] = {-1, 0, 0, 1}; // u, r, l, d
+int dx[4] = {0, 1, -1, 0};
+
+tuple<ll, ll> make_graph(ll cost) {
+  graph.clear();
+  graph.resize(H*W);
+  ll s, g;
+  rep(i, 0, H*W) {
+    int y = i / W, x = i % W;
+    if (grid[y][x] == 'S') s = i;
+    if (grid[y][x] == 'G') g = i;
+    rep(j, 0, 4) {
+      int y_ = y+dy[j], x_ = x+dx[j];
+      if (0 <= y_ && y_ < H && 0 <= x_ && x_ < W) {
+        int to = y_*W+x_;
+        if (grid[y_][x_] == '#') {
+          graph[i].pb(make_pair(to, cost));
+        } else {
+          graph[i].pb(make_pair(to, 1));
+        }
+      }
+    }
+  }
+  return {s, g};
+};
+
+ll dijkstra(ll s, ll g) {
+  ll n = graph.size();
+  vi visited(n, 0);
+  vl dist(n, LINF);
+
+  dist[s] = 0;
+  priority_queue<PLL> pq;
+  pq.push(make_pair(0ll, s));
+
+  while (!pq.empty()) {
+    auto f = pq.top(); pq.pop();
+    int u = f.second;
+    if (visited[u]) continue;
+    visited[u] = 1;
+
+    for (auto &f_: graph[u]) {
+      int v = f_.first;
+      if (visited[v]) continue;
+      if (dist[v] > dist[u] + f_.second) {
+        dist[v] = dist[u] + f_.second;
+        pq.push(make_pair(dist[v] * (-1ll), v));
+      }
+    }
+  }
+
+  return dist[g];
+};
+
+void solve(ll T) {
+  ll ok = 1, ng = T+1;
+  ll s, g;
+  while (abs(ok-ng) > 1) {
+    ll mid = (ok+ng)/2;
+    tie(s, g) = make_graph(mid);
+    ll dis = dijkstra(s, g);
+    if (dis <= T) ok = mid;
+    else ng = mid;
+  }
+  cout << ok << endl;
+};
+
+
+
 int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
-
-  int N, S, T; cin >> N >> S >> T;
-  vi A(N);
-  rep(i, 0, N) cin >> A[i];
-  int ans = 0;
-  int W = A[0];
-  A[0] = 0;
-  rep(i, 0, N) {
-    W += A[i];
-    if (S <= W && W <= T) ans++;
-  }
-
-  cout << ans << endl;
+  cin >> H >> W >> T;
+  rep(i, 0, H) rep(j, 0, W) cin >> grid[i][j];
+  solve(T);
 
   return 0;
 };
