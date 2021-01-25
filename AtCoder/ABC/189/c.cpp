@@ -114,38 +114,38 @@ void print(vector<vector<T>> &df) {
   }
 };
 
+// from histogram get max rectangular area
+ll getLargestRect(vector<long long> A) {
+  vector<pair<long long, long long>> stack;
+  A.push_back(0ll); // add sentinel
+  ll n = A.size();
+  ll maxv = 0;
+
+  for (int i=0; i<n+1; i++) {
+    ll a = A[i];
+    if (stack.empty()) stack.push_back(make_pair(a, i));
+    else {
+      if (stack.back().first < a) stack.push_back(make_pair(a, i));
+      else if (stack.back().first > a) {
+        ll target = i;
+        while (!stack.empty() && stack.back().first >= a) {
+          auto  pre = stack.back(); stack.pop_back();
+          ll tmp = pre.first * (i - pre.second); maxv = max<ll>(maxv, tmp); target = pre.second;
+        }
+        stack.push_back(make_pair(a, target));
+      }
+    }
+  }
+  return maxv;
+};
+
 int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
 
   ll N; cin >> N;
   vl A(N); rep(i, 0, N) cin >> A[i];
-  A.pb(0);
-  vpl V;
-  ll ans = 0;
-  rep(i, 0, N+1) {
-    if (V.empty()) {
-      V.pb(make_pair(A[i], i));
-      continue;
-    }
-    if (V.back().first < A[i]) {
-      V.pb(make_pair(A[i], i));
-      continue;
-    } else if (V.back().first > A[i]) {
-      int target = i;
-      while (!V.empty() && V.back().first >= A[i]) {
-        auto pre = V.back(); V.pop_back();
-        ll area = pre.first * (i - pre.second);
-        chmax(ans, area);
-        target = pre.second;
-      }
-      V.pb(make_pair(A[i], target));
-    }
-  }
-
-  cout << ans << endl;
-
-
+  cout << getLargestRect(A) << endl;
 
   return 0;
 };
