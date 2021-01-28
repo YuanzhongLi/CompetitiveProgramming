@@ -114,39 +114,29 @@ void print(vector<vector<T>> &df) {
   }
 };
 
+const ld esp = 1e-10;
+
 int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
-  int n;
-  ll m;
-  cin >> n >> m;
-  vl A(n);
-  rep(i, 0, n) cin >> A[i];
-  sort(All(A));
-  vl s(n+1);
-  rep(i, 0, n) s[i+1] = s[i]+A[i];
 
-  auto calc = [&](ll x) {
-    ll tot = 0, num = 0;
-    rep(i, 0, n) {
-      int j = lower_bound(All(A), x-A[i])-A.begin();
-      num += n-j;
-      tot += s[n]-s[j];
-      tot += A[i]*(ll)(n-j);
-    }
-    return make_pair(tot, num);
-  };
+  int N, K; cin >> N >> K;
+  vector<ld> W(N), P(N); rep(i, 0, N) cin >> W[i] >> P[i];
+  ld ok = 0.0, ng = 100.0+esp;
+  while (abs(ok-ng) > esp) {
+    ld mid = (ok+ng)/2.0;
+    vector<ld> tmp;
+    rep(i, 0, N) tmp.pb(W[i]*(P[i]-mid));
+    sort(All(tmp)); reverse(All(tmp));
 
-  int ok = 0, ng = 200005;
-  while (abs(ok-ng)>1) {
-    int mid = (ok+ng)/2;
-    if (calc(mid).second >= m) ok = mid;
+    ld cur = 0.0;
+    rep(i, 0, K) cur += tmp[i];
+
+    if (cur >= 0.0) ok = mid;
     else ng = mid;
   }
-  auto p = calc(ok);
-  ll ans = p.first;
-  ans -= (p.second-m)*ok;
-  cout << ans << endl;
+
+  Decimal(ok);
 
   return 0;
 };

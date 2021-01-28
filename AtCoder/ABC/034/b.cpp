@@ -1,4 +1,4 @@
-// #define LOCAL
+#define LOCAL
 #ifdef LOCAL
 #define _GLIBCXX_DEBUG
 #endif
@@ -117,36 +117,9 @@ void print(vector<vector<T>> &df) {
 int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
-  int n;
-  ll m;
-  cin >> n >> m;
-  vl A(n);
-  rep(i, 0, n) cin >> A[i];
-  sort(All(A));
-  vl s(n+1);
-  rep(i, 0, n) s[i+1] = s[i]+A[i];
 
-  auto calc = [&](ll x) {
-    ll tot = 0, num = 0;
-    rep(i, 0, n) {
-      int j = lower_bound(All(A), x-A[i])-A.begin();
-      num += n-j;
-      tot += s[n]-s[j];
-      tot += A[i]*(ll)(n-j);
-    }
-    return make_pair(tot, num);
-  };
-
-  int ok = 0, ng = 200005;
-  while (abs(ok-ng)>1) {
-    int mid = (ok+ng)/2;
-    if (calc(mid).second >= m) ok = mid;
-    else ng = mid;
-  }
-  auto p = calc(ok);
-  ll ans = p.first;
-  ans -= (p.second-m)*ok;
-  cout << ans << endl;
+  int n; cin >> n;
+  cout << ((n&1) ? n+1 : n-1) << endl;
 
   return 0;
 };

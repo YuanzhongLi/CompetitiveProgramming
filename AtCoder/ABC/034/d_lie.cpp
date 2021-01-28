@@ -114,39 +114,46 @@ void print(vector<vector<T>> &df) {
   }
 };
 
+// greedy lie solution
 int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
-  int n;
-  ll m;
-  cin >> n >> m;
-  vl A(n);
-  rep(i, 0, n) cin >> A[i];
-  sort(All(A));
-  vl s(n+1);
-  rep(i, 0, n) s[i+1] = s[i]+A[i];
 
-  auto calc = [&](ll x) {
-    ll tot = 0, num = 0;
-    rep(i, 0, n) {
-      int j = lower_bound(All(A), x-A[i])-A.begin();
-      num += n-j;
-      tot += s[n]-s[j];
-      tot += A[i]*(ll)(n-j);
-    }
-    return make_pair(tot, num);
-  };
-
-  int ok = 0, ng = 200005;
-  while (abs(ok-ng)>1) {
-    int mid = (ok+ng)/2;
-    if (calc(mid).second >= m) ok = mid;
-    else ng = mid;
+  ll N, K; cin >> N >> K;
+  vpl salts(N);
+  rep(i, 0, N) cin >> salts[i].second >> salts[i].first;
+  sort(All(salts)); reverse(All(salts));
+  debug(salts);
+  rep(i, 0, N) {
+    swap(salts[i].first, salts[i].second);
+    salts[i].second *= salts[i].first;
   }
-  auto p = calc(ok);
-  ll ans = p.first;
-  ans -= (p.second-m)*ok;
-  cout << ans << endl;
+
+  set<PLL> s;
+  rep(i, 1, N) s.insert(salts[i]);
+  auto ans = salts[0];
+  K--;
+  while (K) {
+    ld cur_per = -1.0;
+    PLL target;
+    for (auto salt: s) {
+      ld w = (ld)ans.first + (ld)salt.first;
+      ld s = (ld)ans.second + (ld)salt.second;
+      ld p = s/w;
+      if (p > cur_per) {
+        cur_per = p;
+        target = salt;
+      }
+    }
+    s.erase(target);
+    ans.first += target.first;
+    ans.second += target.second;
+    K--;
+  }
+
+  ld percent = (ld)ans.second / (ld)ans.first;
+  Decimal(percent);
+
 
   return 0;
 };
