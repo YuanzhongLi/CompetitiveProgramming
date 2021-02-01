@@ -115,7 +115,7 @@ void print(vector<vector<T>> &df) {
   }
 };
 
-int main() {
+signed main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
 
