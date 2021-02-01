@@ -1,4 +1,4 @@
-// #define LOCAL
+#define LOCAL
 #ifdef LOCAL
 #define _GLIBCXX_DEBUG
 #endif
@@ -115,83 +115,12 @@ void print(vector<vector<T>> &df) {
   }
 };
 
-// 0-indexed
-template<typename T>
-class BIT {
-public:
-  int n;
-  vector<T> dat;
-
-  BIT(int n=0) {
-    init(n);
-  }
-
-  void init(int nin) {
-    n = nin;
-    dat.resize(n);
-    for (int i = 0; i < n; i++) dat[i] = 0;
-  }
-
-  // 0~iまでの和を求める
-  T sum(int i) {
-    T s = 0;
-    while (i >= 0) {
-      s += dat[i];
-      i = (i & (i+1)) - 1;
-    }
-    return s;
-  }
-
-  // [i, j]の和を求める
-  T sum_between(int i, int j){
-    if(i > j) return 0;
-    return sum(j) - sum(i-1);
-  }
-
-  // 一点更新
-  void add(int i, T x) {
-    while(i < n) {
-      dat[i] += x;
-      i |= i+1;
-    }
-  }
-
-  // a[0]+...+a[ret] >= x
-  int lower_bound(T x){
-    int ret = -1;
-    int k = 1;
-    while (2*k <= n) k <<= 1;
-    for( ;k>0; k>>=1){
-      if(ret+k < n && dat[ret+k] < x){
-        x -= dat[ret+k];
-        ret += k;
-      }
-    }
-    return ret + 1;
-  }
-};
-
 signed main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
-  int N; cin >> N;
-  vi A(N); rep(i, 0, N) cin >> A[i];
 
-  ll ans = 0;
-  BIT<int> b(N);
-
-  rep(i, 0, N) {
-    ans += i - b.sum(A[i]);
-    b.add(A[i], 1);
-  }
-
-  cout << ans << endl;
-  rep(i, 1, N) {
-    ans -= A[i-1];
-    ans += (N-1)-A[i-1];
-    cout << ans << endl;
-  }
-
+  string a, b, c; cin >> a >> b >> c;
+  cout << a[0] << b[0] << c[0] << endl;
 
   return 0;
 };
