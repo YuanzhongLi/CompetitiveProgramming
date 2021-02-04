@@ -1,10 +1,11 @@
-#define LOCAL
+// #define LOCAL
 #ifdef LOCAL
 #define _GLIBCXX_DEBUG
 #endif
 #include <bits/stdc++.h>
 using namespace std;
 
+#define int long long
 #define rep(i,s,n) for (int i = (ll)s; i < (ll)n; i++)
 #define rrep(i,n,e) for (int i = (ll)n; i > (ll)e; i--)
 #define ll long long
@@ -13,14 +14,11 @@ using namespace std;
 #define eb emplace_back
 #define All(x) x.begin(), x.end()
 #define Range(x, i, j) x.begin() + i, x.begin() + j
-#define lbidx(x, y) lower_bound(x.begin(), x.end(), y) - x.begin()
-#define ubidx(x, y) upper_bound(x.begin(), x.end(), y) - x.begin()
-#define llbidx(x, y, z) lower_bound(x.begin(), x.end(), z) - lower_bound(x.begin(), x.end(), y) // dist between two elements
 // #define M_PI 3.14159265358979323846 // CF
 #define deg2rad(deg) ((((double)deg)/((double)360)*2*M_PI))
 #define rad2deg(rad) ((((double)rad)/(double)2/M_PI)*(double)360)
 #define Find(set, element) set.find(element) != set.end()
-#define Decimal(x) cout << fixed << setprecision(10) << x << endl; // 小数点を10桁まで表示
+#define Decimal(x) cout << fixed << setprecision(10) << x << endl; // print Decimal number 10 Rank
 #define endl "\n"
 #define Case(x) printf("Case #%d: ", x); // gcj
 
@@ -40,7 +38,7 @@ typedef vector<char> vch;
 typedef vector<vector<char>> vvch;
 
 constexpr ll LINF = 1001002003004005006ll;
-constexpr int INF = 1001001001;
+constexpr int INF = 1002003004;
 constexpr int n_max = 2e5+10;
 
 template<class T>
@@ -81,10 +79,16 @@ void debug_out() {cerr << endl;};
 template<typename Head, typename... Tail>
 void debug_out(Head H, Tail... T) { cerr << " " << to_string(H); debug_out(T...); };
 
+void LINE_OUT() {
+  cout << "--------------" << endl;
+};
+
 #ifdef LOCAL
 #define debug(...) cerr << "[" << #__VA_ARGS__ << "]:", debug_out(__VA_ARGS__)
+#define LINE LINE_OUT();
 #else
 #define debug(...) 71
+#define LINE 71;
 #endif
 
 void print() { cout << endl; }
@@ -111,9 +115,99 @@ void print(vector<vector<T>> &df) {
   }
 };
 
-int main() {
+// 0-indexed
+template<typename T>
+class BIT {
+public:
+  int n;
+  vector<T> dat;
+
+  BIT(int n=0) {
+    init(n);
+  }
+
+  void init(int nin) {
+    n = nin;
+    dat.resize(n);
+    for (int i = 0; i < n; i++) dat[i] = 0;
+  }
+
+  // 0~iまでの和を求める
+  T sum(int i) {
+    T s = 0;
+    while (i >= 0) {
+      s += dat[i];
+      i = (i & (i+1)) - 1;
+    }
+    return s;
+  }
+
+  // [i, j]の和を求める
+  T sum_between(int i, int j){
+    if(i > j) return 0;
+    return sum(j) - sum(i-1);
+  }
+
+  // 一点更新
+  void add(int i, T x) {
+    while(i < n) {
+      dat[i] += x;
+      i |= i+1;
+    }
+  }
+
+  // a[0]+...+a[ret] >= x
+  int lower_bound(T x){
+    int ret = -1;
+    int k = 1;
+    while (2*k <= n) k <<= 1;
+    for( ;k>0; k>>=1){
+      if(ret+k < n && dat[ret+k] < x){
+        x -= dat[ret+k];
+        ret += k;
+      }
+    }
+    return ret + 1;
+  }
+};
+
+signed main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
+
+  int N, Q; cin >> N >> Q;
+  vi C(N); rep(i, 0, N) cin >> C[i];
+  BIT<int> B(N+5);
+  map<PI, vi> order;
+  vvi R(N+5);
+  rep(i, 0, Q) {
+    int l, r; cin >> l >> r;
+    order[make_pair(l, r)].pb(i);
+    R[r].pb(l);
+  }
+
+  vi prev(N+1, -1);
+  vi ans(Q);
+  rep(r, 1, N+1) {
+    int c = C[r-1];
+    if (prev[c] != -1) {
+      B.add(prev[c], -1);
+    }
+    B.add(r, 1);
+    prev[c] = r;
+    for (int l: R[r]) {
+      int types = B.sum_between(l, r);
+      auto pi = make_pair(l, r);
+      for (int idx: order[pi]) {
+        ans[idx] = types;
+      }
+    }
+  }
+
+  rep(i, 0, Q) {
+    cout << ans[i] << endl;
+  }
+
 
   return 0;
 };
