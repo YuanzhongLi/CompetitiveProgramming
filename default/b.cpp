@@ -37,8 +37,7 @@ typedef vector<vector<PLL>> vvpl;
 typedef vector<char> vch;
 typedef vector<vector<char>> vvch;
 
-constexpr ll LINF = 1001002003004005006ll;
-constexpr int INF = 1002003004;
+constexpr ll INF = 1001002003004005006ll;
 constexpr int n_max = 2e5+10;
 
 template<class T>
