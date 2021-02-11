@@ -1,4 +1,4 @@
-// #define LOCAL
+#define LOCAL
 #ifdef LOCAL
 #define _GLIBCXX_DEBUG
 #endif
@@ -114,58 +114,26 @@ void print(vector<vector<T>> &df) {
   }
 };
 
-struct Edge {
-  int to, cost;
-};
-
 signed main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
-
-  int N, M; cin >> N >> M;
-  vvi g(N, vi(N, INF));
-  rep(i, 0, M) {
-    int a, b, c; cin >> a >> b >> c; a--; b--;
-    chmin(g[a][b], c);
-  }
-
-  vector<vector<Edge>> graph(N);
-  vi self_dist(N, INF);
-  rep(i, 0, N) {
-    rep(j, 0, N) {
-      if (i == j) { chmin(self_dist[i], g[i][j]); continue; };
-      if (g[i][j] == INF) continue;
-      graph[i].pb({j, g[i][j]});
+  string o, e; cin >> o >> e;
+  int no = o.size(), ne = e.size();
+  int n = no+ne;
+  int io = 0;
+  int ie = 0;
+  string ans = "";
+  rep(i, 0, n) {
+    if (i&1) {
+      ans += e[ie];
+      ie++;
+    } else {
+      ans += o[io];
+      io++;
     }
   }
 
-  vvi dist(N, vi(N, INF));
-  rep(i, 0, N) {
-    priority_queue<PI> pq;
-    int s = i;
-    dist[s][s] = 0;
-    vector<bool> visited(N, false);
-    pq.push(make_pair(0ll, s));
-    while (!pq.empty()) {
-      auto f = pq.top(); pq.pop();
-      int u = f.second;
-      visited[u] = true;
-      rep(j, 0, graph[u].size()) {
-        int v = graph[u][j].to;
-        if (visited[v]) continue;
-        if (chmin(dist[s][v], dist[s][u]+graph[u][j].cost)) {
-          pq.push(make_pair(dist[s][v] * (-1ll), v));
-        }
-      }
-    }
-    dist[s][s] = self_dist[s];
-  }
-
-  rep(i, 0, N) {
-    int ans = dist[i][i];
-    rep(j, 0, N) chmin(ans, dist[i][j]+dist[j][i]);
-    cout << (ans == INF ? -1 : ans) << endl;
-  }
+  cout << ans << endl;
 
   return 0;
 };

@@ -114,58 +114,142 @@ void print(vector<vector<T>> &df) {
   }
 };
 
-struct Edge {
-  int to, cost;
+template<std::int_fast64_t Modulus>
+class modint {
+  using i64 = int_fast64_t;
+
+  public:
+  i64 a;
+
+  constexpr modint(const i64 x = 0) noexcept {
+    this -> a = x % Modulus;
+    if(a < 0){
+      a += Modulus;
+    }
+  }
+  // constexpr i64 &value() const noexcept {return a;}
+  constexpr const i64 &value() const noexcept {return a;}
+  constexpr modint operator+(const modint rhs) const noexcept {
+    return modint(*this) += rhs;
+  }
+  constexpr modint operator-(const modint rhs) const noexcept {
+    return modint(*this) -= rhs;
+  }
+  constexpr modint operator*(const modint rhs) const noexcept {
+    return modint(*this) *= rhs;
+  }
+  constexpr modint operator/(const modint rhs) const noexcept {
+    return modint(*this) /= rhs;
+  }
+  constexpr modint &operator+=(const modint rhs) noexcept {
+    a += rhs.a;
+    if(a >= Modulus) {
+      a -= Modulus;
+    }
+    return *this;
+  }
+  constexpr modint &operator-=(const modint rhs) noexcept {
+    if(a < rhs.a) {
+      a += Modulus;
+    }
+    a -= rhs.a;
+    return *this;
+  }
+  constexpr modint &operator*=(const modint rhs) noexcept {
+    a = a * rhs.a % Modulus;
+    return *this;
+  }
+  constexpr modint &operator/=(modint rhs) noexcept {
+    i64 a_ = rhs.a, b = Modulus, u = 1, v = 0;
+    while(b){
+      i64 t = a_/b;
+      a_ -= t * b; swap(a_,b);
+      u -= t * v; swap(u,v);
+    }
+    a = a * u % Modulus;
+    if(a < 0) a += Modulus;
+    return *this;
+  }
+
+  constexpr bool operator==(const modint rhs) noexcept {
+    return a == rhs.a;
+  }
+  constexpr bool operator!=(const modint rhs) noexcept {
+    return a != rhs.a;
+  }
+  constexpr bool operator>(const modint rhs) noexcept {
+    return a > rhs.a;
+  }
+  constexpr bool operator>=(const modint rhs) noexcept {
+    return a >= rhs.a;
+  }
+  constexpr bool operator<(const modint rhs) noexcept {
+    return a < rhs.a;
+  }
+  constexpr bool operator<=(const modint rhs) noexcept {
+    return a <= rhs.a;
+  }
+  template<typename T>
+  friend constexpr modint modpow(const modint &mt, T n) noexcept {
+    if(n < 0){
+      modint t = (modint(1) / mt);
+      return modpow(t, -n);
+    }
+    modint res = 1, tmp = mt;
+    while(n){
+      if(n & 1)res *= tmp;
+      tmp *= tmp;
+      n /= 2;
+    }
+    return res;
+  }
+};
+
+const long long MOD = 1e9+7;
+using mint = modint<MOD>;
+// iostream
+std::ostream &operator<<(std::ostream &out, const modint<MOD> &m) {
+  out << m.a; return out;
+};
+std::istream &operator>>(std::istream &in, modint<MOD> &m) {
+  long long a; in >> a; m = mint(a); return in;
+};
+
+mint fact[200005];
+
+void init() {
+  fact[0] = mint(1);
+  for(int i = 1; i < 200005; i++) {
+    fact[i] = fact[i-1] * mint(i);
+  }
+};
+
+// calculate nCr mod
+mint modcomb(long long n, long long r) {
+  return fact[n] / fact[r] / fact[n - r];
 };
 
 signed main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
 
-  int N, M; cin >> N >> M;
-  vvi g(N, vi(N, INF));
-  rep(i, 0, M) {
-    int a, b, c; cin >> a >> b >> c; a--; b--;
-    chmin(g[a][b], c);
+  int n, m; cin >> n >> m;
+  vector<mint> X(n), Y(m);
+  rep(i, 0, n) cin >> X[i];
+  rep(i, 0, m) cin >> Y[i];
+
+  mint y = 0;
+  rep(i, 1, m) {
+    y += (Y[i-1]-Y[i])*(mint(i)*(mint(m)-(mint(i))));
   }
 
-  vector<vector<Edge>> graph(N);
-  vi self_dist(N, INF);
-  rep(i, 0, N) {
-    rep(j, 0, N) {
-      if (i == j) { chmin(self_dist[i], g[i][j]); continue; };
-      if (g[i][j] == INF) continue;
-      graph[i].pb({j, g[i][j]});
-    }
+  mint x = 0;
+  rep(i, 1, n) {
+    x += (X[i-1]-X[i])*(mint(i)*(mint(n)-(mint(i))));
   }
 
-  vvi dist(N, vi(N, INF));
-  rep(i, 0, N) {
-    priority_queue<PI> pq;
-    int s = i;
-    dist[s][s] = 0;
-    vector<bool> visited(N, false);
-    pq.push(make_pair(0ll, s));
-    while (!pq.empty()) {
-      auto f = pq.top(); pq.pop();
-      int u = f.second;
-      visited[u] = true;
-      rep(j, 0, graph[u].size()) {
-        int v = graph[u][j].to;
-        if (visited[v]) continue;
-        if (chmin(dist[s][v], dist[s][u]+graph[u][j].cost)) {
-          pq.push(make_pair(dist[s][v] * (-1ll), v));
-        }
-      }
-    }
-    dist[s][s] = self_dist[s];
-  }
-
-  rep(i, 0, N) {
-    int ans = dist[i][i];
-    rep(j, 0, N) chmin(ans, dist[i][j]+dist[j][i]);
-    cout << (ans == INF ? -1 : ans) << endl;
-  }
+  mint ans = x * y;
+  cout << ans << endl;
 
   return 0;
 };
