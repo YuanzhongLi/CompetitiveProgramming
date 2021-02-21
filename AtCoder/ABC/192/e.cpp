@@ -141,6 +141,7 @@ signed main() {
   while (!pq.empty()) {
     auto f = pq.top(); pq.pop();
     int u = f.second;
+    if (visited[u]) continue;
     visited[u] = true;
     int ut = -f.first;
     for (auto e: g[u]) {
