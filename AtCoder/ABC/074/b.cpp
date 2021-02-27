@@ -1,4 +1,4 @@
-// #define LOCAL
+#define LOCAL
 #ifdef LOCAL
 #define _GLIBCXX_DEBUG
 #endif
@@ -114,98 +114,17 @@ void print(vector<vector<T>> &df) {
   }
 };
 
-int N, M;
-vvi graph;
-vi depth;
-vector<bool> used;
-vi ans;
-
-void f(vi &loop) {
-  ans.pb(loop[0]);
-  while (ans.back() != loop.back()) {
-    int u = ans.back();
-    int d = -1;
-    int next = -1;
-    for (int v: graph[u]) {
-      if (used[v] && chmax(d, depth[v])) {
-        next = v;
-      }
-    }
-    ans.pb(next);
-  }
-};
-
-bool dfs(int u, int d, vi &A) {
-  depth[u] = d;
-  if (A.size() >= 2) {
-    int from = A.back();
-    int dep = -1;
-    int loop_s = -1;
-    for (int to: graph[from]) {
-      if (used[to]) {
-        if (chmax(dep, depth[to])) {
-          loop_s = to;
-        }
-      }
-    }
-    if (loop_s != -1) {
-      int loop_s_idx = -1;
-      rep(i, 0, A.size()) {
-        if (A[i] == loop_s) {
-          loop_s_idx = i;
-          break;
-        }
-      }
-      vi loop;
-      rep(i, loop_s_idx, A.size()) loop.pb(A[i]);
-      f(loop);
-      return true;
-    }
-  }
-
-  for (int v: graph[u]) {
-    if (used[v]) continue;
-    A.pb(v); used[v] = true;
-    if (dfs(v, d+1, A)) return true;
-    A.pop_back(); used[v] = false;
-  }
-
-  return false;
-};
-
-
 signed main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
 
-  cin >> N >> M;
-  graph.resize(N);
-  depth.resize(N);
-  used.resize(N);
-
-  rep(i, 0, M) {
-    int a, b; cin >> a >> b; a--; b--;
-    graph[a].pb(b);
-  }
-
+  int N, K; cin >> N >> K;
+  int ans = 0;
   rep(i, 0, N) {
-    vi A;
-    rep(i, 0, N) {
-      depth[i] = INF; used[i] = false;
-    }
-    A.pb(i);
-    used[i] = true;
-
-    if (dfs(i, 0, A)) {
-      cout << (int)ans.size() << endl;
-      for (int num: ans) {
-        cout << num+1 << endl;
-      }
-      return 0;
-    }
+    int x; cin >> x;
+    ans += min(abs(x)*2, abs(K-x)*2);
   }
-
-  cout << -1 << endl;
+  cout << ans << endl;
 
   return 0;
 };
