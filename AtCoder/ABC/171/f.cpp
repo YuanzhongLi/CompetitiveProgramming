@@ -210,22 +210,6 @@ class modint {
   constexpr bool operator<=(const modint rhs) noexcept {
     return a <= rhs.a;
   }
-  // constexpr modint& operator++() noexcept {
-  //     return (*this) += modint(1);
-  // }
-  // constexpr modint operator++(int) {
-  //     modint tmp(*this);
-  //     operator++();
-  //     return tmp;
-  // }
-  // constexpr modint& operator--() noexcept {
-  //     return (*this) -= modint(1);
-  // }
-  // constexpr modint operator--(int) {
-  //     modint tmp(*this);
-  //     operator--();
-  //     return tmp;
-  // }
   template<typename T>
   friend constexpr modint modpow(const modint &mt, T n) noexcept {
     if(n < 0){
@@ -240,6 +224,17 @@ class modint {
     }
     return res;
   }
+  friend constexpr modint modinv(const modint &rhs) noexcept {
+    i64 a_ = rhs.a, b = Modulus, u = 1, v = 0;
+    while(b){
+      i64 t = a_/b;
+      a_ -= t * b; swap(a_,b);
+      u -= t * v; swap(u,v);
+    }
+    u %= Modulus;
+    if(u < 0) u += Modulus;
+    return modint(u);
+  };
 };
 
 const long long MOD = 1e9+7;
@@ -251,12 +246,12 @@ std::ostream &operator<<(std::ostream &out, const modint<MOD> &m) {
 std::istream &operator>>(std::istream &in, modint<MOD> &m) {
   long long a; in >> a; m = mint(a); return in;
 };
-
-mint fact[200005];
+const int MAX = 2000005;
+mint fact[MAX];
 
 void init() {
   fact[0] = mint(1);
-  for(int i = 1; i < 200005; i++) {
+  for(int i = 1; i < MAX; i++) {
     fact[i] = fact[i-1] * mint(i);
   }
 };
@@ -266,16 +261,37 @@ mint modcomb(long long n, long long r) {
   return fact[n] / fact[r] / fact[n - r];
 };
 
+vector<mint> f25(MAX), f26(MAX);
+void init_f() {
+  f25[0] = f26[0] = mint(1);
+  rep(i, 1, MAX) {
+    f25[i] = f25[i-1]*mint(25);
+    f26[i] = f26[i-1]*mint(26);
+  }
+};
+
 
 int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
 
   int K; cin >> K;
-  string S;
-  cin >> S;
+  string S; cin >> S;
+  int N = S.size();
+  init();
+  init_f();
 
-  auto block = Block(S);
+  mint ans = mint(0);
+  mint inv = modinv(fact[N-1]);
+  rep(k, 0, K+1) {
+    ans += fact[N+K-k-1] * modinv(fact[N+K-k-1-(N-1)]) * inv * f25[K-k] * f26[k];
+    // ans += modcomb(N+K-k-1, N-1) * f25[K-k] * f26[k];
+  }
+
+  cout << ans << endl;
+
+
+
 
   return 0;
 };
