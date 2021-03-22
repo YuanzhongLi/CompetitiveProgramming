@@ -5,6 +5,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+#define int long long
 #define rep(i,s,n) for (int i = (ll)s; i < (ll)n; i++)
 #define rrep(i,n,e) for (int i = (ll)n; i > (ll)e; i--)
 #define ll long long
@@ -36,8 +37,7 @@ typedef vector<vector<PLL>> vvpl;
 typedef vector<char> vch;
 typedef vector<vector<char>> vvch;
 
-constexpr ll LINF = 1001002003004005006ll;
-constexpr int INF = 1002003004;
+constexpr ll INF = 1001002003004005006ll;
 constexpr int n_max = 2e5+10;
 
 template<class T>
@@ -114,9 +114,88 @@ void print(vector<vector<T>> &df) {
   }
 };
 
-int main() {
+template<typename T>
+class BIT {
+public:
+  int n;
+  vector<T> dat;
+
+  BIT(int n=0) {
+    init(n);
+  }
+
+  void init(int nin) {
+    n = nin;
+    dat.resize(n);
+    for (int i = 0; i < n; i++) dat[i] = 0;
+  }
+
+  // 0~iまでの和を求める
+  T sum(int i) {
+    T s = 0;
+    while (i >= 0) {
+      s += dat[i];
+      i = (i & (i+1)) - 1;
+    }
+    return s;
+  }
+
+  // [i, j]の和を求める
+  T sum_between(int i, int j){
+    if(i > j) return 0;
+    return sum(j) - sum(i-1);
+  }
+
+  // 一点更新
+  void add(int i, T x) {
+    while(i < n) {
+      dat[i] += x;
+      i |= i+1;
+    }
+  }
+
+  // a[0]+...+a[ret] >= x
+  int lower_bound(T x){
+    int ret = -1;
+    int k = 1;
+    while (2*k <= n) k <<= 1;
+    for( ;k>0; k>>=1){
+      if(ret+k < n && dat[ret+k] < x){
+        x -= dat[ret+k];
+        ret += k;
+      }
+    }
+    return ret + 1;
+  }
+};
+
+signed main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
+
+  int H, W, M; cin >> H >> W >> M;
+  vi row_mi(H, W), col_mi(W, H);
+  vvi row(H);
+  rep(i, 0, M) {
+    int x, y; cin >> x >> y; x--; y--;
+    row[x].pb(y);
+    chmin(row_mi[x], y);
+    chmin(col_mi[y], x);
+  }
+  int ans = 0;
+  rep(col, 0, row_mi[0]) {
+    ans += col_mi[col];
+  }
+  BIT<int> bit(W);
+  rep(col, 0, W) bit.add(col, 1);
+  rep(col, 0, row_mi[0]) bit.add(col, -1);
+  rep(r, 1, col_mi[0]) {
+    ans += bit.sum(row_mi[r]-1);
+    for (int c: row[r]) {
+      if (bit.sum_between(c, c) == 0) bit.add(c, 1);
+    }
+  }
+  cout << ans << endl;
 
   return 0;
 };
