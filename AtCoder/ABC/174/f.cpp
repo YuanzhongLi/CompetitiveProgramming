@@ -175,18 +175,16 @@ signed main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
 
-  int N, Q; cin >> N >> Q;
+ int N, Q; cin >> N >> Q;
   vi C(N); rep(i, 0, N) cin >> C[i];
   BIT<int> B(N+5);
-  map<PI, vi> order;
-  vvi R(N+5);
+  vvpi R(N+5);
   rep(i, 0, Q) {
     int l, r; cin >> l >> r;
-    order[make_pair(l, r)].pb(i);
-    R[r].pb(l);
+    R[r].pb(make_pair(l, i));
   }
 
-  vi prev(N+1, -1);
+  vi prev(N+5, -1);
   vi ans(Q);
   rep(r, 1, N+1) {
     int c = C[r-1];
@@ -194,19 +192,15 @@ signed main() {
       B.add(prev[c], -1);
     }
     B.add(r, 1);
-    prev[c] = r;
-    for (int l: R[r]) {
-      int types = B.sum_between(l, r);
-      auto pi = make_pair(l, r);
-      for (int idx: order[pi]) {
-        ans[idx] = types;
-      }
+    for (auto pi: R[r]) {
+      int l = pi.first, id = pi.second;
+      int nums = B.sum_between(l, r);
+      ans[id] = nums;
     }
+    prev[c] = r;
   }
 
-  rep(i, 0, Q) {
-    cout << ans[i] << endl;
-  }
+  rep(i, 0, Q) { cout << ans[i] << endl;}
 
 
   return 0;
