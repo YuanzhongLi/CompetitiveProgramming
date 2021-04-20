@@ -1,4 +1,4 @@
-#define LOCAL
+// #define LOCAL
 #ifdef LOCAL
 #define _GLIBCXX_DEBUG
 #endif
@@ -117,11 +117,9 @@ void print(vector<vector<T>> &df) {
 signed main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
-
+  int N, K; cin >> N >> K;
   string S; cin >> S;
-  int K; cin >> K;
   vvi mem(26);
-  int N = S.size();
   rep(i,0,N) {
     mem[(int)S[i]-'a'].pb(i);
   }

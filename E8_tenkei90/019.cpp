@@ -114,34 +114,42 @@ void print(vector<vector<T>> &df) {
   }
 };
 
-const int MAX = 5005;
+int N;
+vi A;
+vvi mem;
+
+int dp(int l, int r) {
+  if (mem[l][r] != INF) return mem[l][r];
+  if (l+1 == r) {
+    mem[l][r] = abs(A[l]-A[r]);
+    return mem[l][r];
+  }
+
+  for (int i=l; i <= r; i+=2) {
+    for (int j=i+1; j <= r; j+=2) {
+      int left, mid, right;
+      if (i == l) left = 0;
+      else left = dp(l, i-1);
+      if (i+1 == j) mid = 0;
+      else mid = dp(i+1, j-1);
+      if (j == r) right = 0;
+      else right = dp(j+1, r);
+      int alt = abs(A[i]-A[j]) + left + mid + right;
+      chmin(mem[l][r], alt);
+    }
+  }
+  return mem[l][r];
+};
+
 signed main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
-
-  int N; cin >> N;
-  vi D(N), C(N), S(N), start_deadline(N);
-  rep(i,0,N) cin >> D[i] >> C[i] >> S[i];
-  vector<int> ord(N); iota(All(ord), 0);
-  sort(All(ord), [&](int a, int b) {
-    return D[a] < D[b];
-  });
-
-
-  vvi dp(MAX, vi(MAX));
-  int ans = 0;
-  rep(i,1, N+1) {
-    int ord_i = ord[i-1];
-    int d = D[ord_i], c = C[ord_i], s = S[ord_i];
-    rep(j,0,MAX) {
-      chmax(dp[i][j], dp[i-1][j]);
-      if (j <= d && j-c >= 0) {
-        chmax(dp[i][j], dp[i-1][j-c]+s);
-      }
-      chmax(ans, dp[i][j]);
-    }
-  }
-
+  cin >> N;
+  A.resize(2*N);
+  rep(i,0,2*N) cin >> A[i];
+  mem.resize(2*N); rep(i,0,2*N) mem[i].resize(2*N);
+  rep(i,0,2*N) rep(j,0,2*N) mem[i][j] = INF;
+  int ans = dp(0,2*N-1);
   cout << ans << endl;
 
   return 0;

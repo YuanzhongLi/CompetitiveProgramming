@@ -1,4 +1,4 @@
-#define LOCAL
+// #define LOCAL
 #ifdef LOCAL
 #define _GLIBCXX_DEBUG
 #endif
@@ -117,6 +117,30 @@ void print(vector<vector<T>> &df) {
 signed main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
+
+  int N; cin >> N;
+  vector<string> ans;
+  rep(i,0, 1<<N) {
+    int ret = 0;
+    for (int j = N-1; j >= 0; j--) {
+      if (!((i>>j)&1)) ret += 1;
+      else {
+        ret -= 1;
+        if (ret < 0) break;
+      }
+    }
+    if (ret == 0) {
+      string alt = "";
+      for (int j = N-1; j >= 0; j--) {
+        if (!((i>>j)&1)) alt += '(';
+        else alt += ')';
+      }
+      ans.pb(alt);
+    }
+  }
+  for (string &s: ans) {
+    cout << s << endl;
+  }
 
   return 0;
 };

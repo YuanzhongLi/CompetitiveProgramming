@@ -1,4 +1,4 @@
-// #define LOCAL
+#define LOCAL
 #ifdef LOCAL
 #define _GLIBCXX_DEBUG
 #endif
@@ -114,35 +114,57 @@ void print(vector<vector<T>> &df) {
   }
 };
 
-const int MAX = 5005;
 signed main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
 
   int N; cin >> N;
-  vi D(N), C(N), S(N), start_deadline(N);
-  rep(i,0,N) cin >> D[i] >> C[i] >> S[i];
-  vector<int> ord(N); iota(All(ord), 0);
-  sort(All(ord), [&](int a, int b) {
-    return D[a] < D[b];
-  });
+  vvi graph(N);
+  rep(i,0,N-1) {
+    int a, b; cin >> a >> b; a--; b--;
+    graph[a].pb(b);
+    graph[b].pb(a);
+  }
 
-
-  vvi dp(MAX, vi(MAX));
-  int ans = 0;
-  rep(i,1, N+1) {
-    int ord_i = ord[i-1];
-    int d = D[ord_i], c = C[ord_i], s = S[ord_i];
-    rep(j,0,MAX) {
-      chmax(dp[i][j], dp[i-1][j]);
-      if (j <= d && j-c >= 0) {
-        chmax(dp[i][j], dp[i-1][j-c]+s);
-      }
-      chmax(ans, dp[i][j]);
+  queue<PI> q;
+  q.push({0,0});
+  vi dist(N, INF);
+  vector<bool> visited(N, false);
+  int x;
+  int dx = -1;
+  while (!q.empty()) {
+    auto pi = q.front(); q.pop();
+    int u = pi.first, d = pi.second;
+    if (visited[u]) continue;
+    visited[u] = true;
+    dist[u] = d;
+    if (chmax(dx, d)) x = u;
+    for (int v: graph[u]) {
+      if (visited[v]) continue;
+      q.push({v, d+1});
     }
   }
 
-  cout << ans << endl;
+  vi dist2(N, INF);
+  vector<bool> visited2(N, false);
+  q.push({x, 0});
+  int y;
+  int dy = -1;
+  while (!q.empty()) {
+    auto pi = q.front(); q.pop();
+    int u = pi.first, d = pi.second;
+    if (visited2[u]) continue;
+    visited2[u] = true;
+    dist2[u] = d;
+    if (chmax(dy, d)) y = u;
+    for (int v: graph[u]) {
+      if (visited2[v]) continue;
+      q.push({v, d+1});
+    }
+  }
+
+  cout << dy + 1 << endl;
+
 
   return 0;
 };
