@@ -114,57 +114,20 @@ void print(vector<vector<T>> &df) {
   }
 };
 
-int N, M;
-vvi graph, r_graph;
-vi vs;
-vi used;
-
-void dfs(int u) {
-  used[u] = 1;
-  for (int v: graph[u]) {
-    if (!used[v]) dfs(v);
-  }
-  vs.pb(u);
-};
-
-void rdfs(int u, int &cnt) {
-  used[u] = 1;
-  cnt+=1;
-  for (int v: r_graph[u]) {
-    if (!used[v]) rdfs(v, cnt);
-  }
-};
-
-int xC2(int x) {
-  return x*(x-1)/2;
+int gcd(int a, int b) {
+  if (a < b) swap(a, b);
+  a %= b;
+  if (a == 0) return b;
+  else return gcd(a, b);
 };
 
 signed main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
-  cin >> N >> M;
-  graph.resize(N); r_graph.resize(N);
-  used.resize(N); rep(i,0,N) used[i] = 0;
-  rep(i,0,M) {
-    int a, b; cin >> a >> b; a--; b--;
-    graph[a].pb(b); r_graph[b].pb(a);
-  }
-  rep(i,0,N) {
-    if (!used[i]) dfs(i);
-  }
-  reverse(All(vs));
-  rep(i,0,N) used[i] = 0;
 
-  int ans = 0;
-  for (int v: vs) {
-    if (!used[v]) {
-      int num = 0;
-      rdfs(v, num);
-      ans += xC2(num);
-    }
-  }
-
-  cout << ans << endl;
+  int a, b, c; cin >> a >> b >> c;
+  int g = gcd(a, gcd(b, c));
+  cout << a/g +b/g + c/g - 3 << endl;
 
   return 0;
 };

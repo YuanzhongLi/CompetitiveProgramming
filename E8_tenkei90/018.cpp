@@ -114,57 +114,119 @@ void print(vector<vector<T>> &df) {
   }
 };
 
-int N, M;
-vvi graph, r_graph;
-vi vs;
-vi used;
+#define EPS (1e-10)
+#define equals(a, b) (fabs((a) - (b)) < EPS)
 
-void dfs(int u) {
-  used[u] = 1;
-  for (int v: graph[u]) {
-    if (!used[v]) dfs(v);
+class Point {
+  public:
+  long double x, y;
+
+  Point(long double x = 0, long double y = 0): x(x), y(y) {}
+
+  Point operator + (Point p) { return Point(x + p.x, y + p.y); }
+  Point operator - (Point p) { return Point(x - p.x, y - p.y); }
+  Point operator * (long double a) { return Point(a * x, a * y); }
+  Point operator / (long double a) { return Point(x / a, y / a); }
+
+  long double abs() { return sqrtl(norm()); }
+  long double norm() { return x * x + y * y; }
+
+  bool operator < (const Point &p) const {
+    return x != p.x ? x < p.x : y < p.y;
   }
-  vs.pb(u);
+
+  bool operator == (const Point &p) const {
+    return fabs(x - p.x) < EPS && fabs(y - p.y) < EPS;
+  }
 };
 
-void rdfs(int u, int &cnt) {
-  used[u] = 1;
-  cnt+=1;
-  for (int v: r_graph[u]) {
-    if (!used[v]) rdfs(v, cnt);
-  }
+std::ostream &operator<<(std::ostream &out, const Point &p) {
+  out << '(' << p.x << ", " << p.y << ')';
+  return out;
+}
+
+class Circle {
+  public:
+    Point c;
+    long double r;
+    Circle(Point c = Point(), long double r = 0.0): c(c), r(r) {}
 };
 
-int xC2(int x) {
-  return x*(x-1)/2;
+struct Segment {
+  Point p1, p2;
+};
+
+typedef Point Vector;
+typedef Segment Line;
+
+long double norm(Vector a) {
+  return a.x * a.x + a.y * a.y;
+};
+
+long double abs(Vector a) {
+  return sqrtl(norm(a));
+};
+
+// 内積
+long double dot(Vector a, Vector b) {
+  return a.x * b.x + a.y * b.y;
+};
+
+// 外積
+long double cross(Vector a, Vector b) {
+  return a.x * b.y - a.y * b.x;
+};
+
+// 直交判定
+bool isOrthogonal(Vector a, Vector b) {
+  return equals(dot(a, b), 0.0);
+};
+
+// 並行判定
+bool isParallel(Vector a, Vector b) {
+  return equals(cross(a, b), 0.0);
+};
+
+// 射影
+Point project(Segment s, Point p) {
+  Vector base = s.p2 - s.p1;
+  long double r = dot(p - s.p1, base) / base.norm();
+  return s.p1 + base * r;
+};
+
+// 反射
+Point reflect(Segment s, Point p) {
+  return p + (project(s, p) - p) * 2.0;
+};
+
+// 回転 ang: radian
+Point rot(Point p, long double ang) {return Point(cos(ang) * p.x - sin(ang) * p.y, sin(ang) * p.x + cos(ang) * p.y); };
+Point rot90(Point p) { return Point(-p.y, p.x); };
+
+// 点と点の距離
+long double getDistance(Point a, Point b) {
+  return abs(a - b);
+};
+
+Point E8_pos(ld T, ld L, ld t) {
+  return rot(Point(0, -L/2.0), deg2rad(360.0*(1.0-t/T))) + Point(0, L/2.0);
 };
 
 signed main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
-  cin >> N >> M;
-  graph.resize(N); r_graph.resize(N);
-  used.resize(N); rep(i,0,N) used[i] = 0;
-  rep(i,0,M) {
-    int a, b; cin >> a >> b; a--; b--;
-    graph[a].pb(b); r_graph[b].pb(a);
-  }
-  rep(i,0,N) {
-    if (!used[i]) dfs(i);
-  }
-  reverse(All(vs));
-  rep(i,0,N) used[i] = 0;
 
-  int ans = 0;
-  for (int v: vs) {
-    if (!used[v]) {
-      int num = 0;
-      rdfs(v, num);
-      ans += xC2(num);
-    }
+  ld T, L, X, Y; cin >> T >> L >> X >> Y;
+  int Q; cin >> Q;
+  while (Q--) {
+    ld t; cin >> t;
+    Point E8 = E8_pos(T, L, t);
+    ld E8_y = E8.x, E8_z = E8.y;
+    ld d1 = getDistance(Point(0, E8_y), Point(X, Y));
+    ld d2 = E8_z;
+    ld ans = rad2deg(atan2l(d2, d1));
+    Decimal(ans);
   }
-
-  cout << ans << endl;
 
   return 0;
 };

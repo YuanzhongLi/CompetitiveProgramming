@@ -1,4 +1,4 @@
-// #define LOCAL
+#define LOCAL
 #ifdef LOCAL
 #define _GLIBCXX_DEBUG
 #endif
@@ -114,57 +114,18 @@ void print(vector<vector<T>> &df) {
   }
 };
 
-int N, M;
-vvi graph, r_graph;
-vi vs;
-vi used;
-
-void dfs(int u) {
-  used[u] = 1;
-  for (int v: graph[u]) {
-    if (!used[v]) dfs(v);
-  }
-  vs.pb(u);
-};
-
-void rdfs(int u, int &cnt) {
-  used[u] = 1;
-  cnt+=1;
-  for (int v: r_graph[u]) {
-    if (!used[v]) rdfs(v, cnt);
-  }
-};
-
-int xC2(int x) {
-  return x*(x-1)/2;
-};
-
 signed main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
-  cin >> N >> M;
-  graph.resize(N); r_graph.resize(N);
-  used.resize(N); rep(i,0,N) used[i] = 0;
-  rep(i,0,M) {
-    int a, b; cin >> a >> b; a--; b--;
-    graph[a].pb(b); r_graph[b].pb(a);
-  }
-  rep(i,0,N) {
-    if (!used[i]) dfs(i);
-  }
-  reverse(All(vs));
-  rep(i,0,N) used[i] = 0;
 
-  int ans = 0;
-  for (int v: vs) {
-    if (!used[v]) {
-      int num = 0;
-      rdfs(v, num);
-      ans += xC2(num);
-    }
-  }
-
-  cout << ans << endl;
+  int N; cin >> N;
+  vi A(N), B(N);
+  rep(i,0,N) cin >> A[i];
+  rep(i,0,N) cin >> B[i];
+  sort(All(A)); sort(All(B));
+  int ret = 0;
+  rep(i,0,N) ret+=abs(A[i]-B[i]);
+  cout << ret << endl;
 
   return 0;
 };
