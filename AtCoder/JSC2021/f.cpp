@@ -1,4 +1,4 @@
-#define LOCAL
+// #define LOCAL
 #ifdef LOCAL
 #define _GLIBCXX_DEBUG
 #endif
@@ -114,9 +114,114 @@ void print(vector<vector<T>> &df) {
   }
 };
 
+// 0-indexed
+template<typename T>
+class BIT {
+public:
+  int n;
+  vector<T> dat;
+
+  BIT(int n=0) {
+    init(n);
+  }
+
+  void init(int nin) {
+    n = nin;
+    dat.resize(n);
+    for (int i = 0; i < n; i++) dat[i] = 0;
+  }
+
+  // 0~iまでの和を求める
+  T sum(int i) {
+    T s = 0;
+    while (i >= 0) {
+      s += dat[i];
+      i = (i & (i+1)) - 1;
+    }
+    return s;
+  }
+
+  // [i, j]の和を求める
+  T sum_between(int i, int j){
+    if(i > j) return 0;
+    return sum(j) - sum(i-1);
+  }
+
+  // 一点更新
+  void add(int i, T x) {
+    while(i < n) {
+      dat[i] += x;
+      i |= i+1;
+    }
+  }
+
+  // a[0]+...+a[ret] >= x
+  int lower_bound(T x){
+    int ret = -1;
+    int k = 1;
+    while (2*k <= n) k <<= 1;
+    for( ;k>0; k>>=1){
+      if(ret+k < n && dat[ret+k] < x){
+        x -= dat[ret+k];
+        ret += k;
+      }
+    }
+    return ret + 1;
+  }
+
+  void show() {
+    for (int i = 0; i < n; i++) cout << sum_between(i,i) << " ";
+    cout << endl;
+  }
+};
+
 signed main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
+
+  int N, M, Q; cin >> N >> M >> Q;
+  vi A(N), B(M);
+  vi T(Q), X(Q), Y(Q);
+  vi tmp; tmp.pb(0);
+  rep(i,0,Q) {
+    cin >> T[i] >> X[i] >> Y[i]; X[i]--;
+    tmp.pb(Y[i]);
+  }
+  sort(All(tmp));
+  tmp.erase(unique(All(tmp)), tmp.end());
+  int n = tmp.size();
+  map<int,int> num2idx;
+  rep(i,0,n) num2idx[tmp[i]] = i;
+  BIT<int> bit_num_A(n), bit_sum_A(n), bit_num_B(n), bit_sum_B(n);
+  bit_num_A.add(0, N); bit_num_B.add(0, M);
+  int ans = 0;
+  rep(i,0,Q) {
+    int t = T[i], x = X[i], y = Y[i];
+    if (t == 1) {
+      int prev = A[x]; A[x] = y;
+      int prev_idx = num2idx[prev], y_idx = num2idx[y];
+      ans += (y * bit_num_B.sum(y_idx) - prev * bit_num_B.sum(prev_idx));
+      if (y > prev) {
+        ans -= bit_sum_B.sum_between(prev_idx+1, y_idx);
+      } else if (y < prev) {
+        ans += bit_sum_B.sum_between(y_idx+1, prev_idx);
+      }
+      bit_num_A.add(prev_idx, -1); bit_num_A.add(y_idx, 1);
+      bit_sum_A.add(prev_idx, -prev); bit_sum_A.add(y_idx, y);
+    } else {
+      int prev = B[x]; B[x] = y;
+      int prev_idx = num2idx[prev], y_idx = num2idx[y];
+      ans += (y * bit_num_A.sum(y_idx) - prev * bit_num_A.sum(prev_idx));
+      if (y > prev) {
+        ans -= bit_sum_A.sum_between(prev_idx+1, y_idx);
+      } else if (y < prev) {
+        ans += bit_sum_A.sum_between(y_idx+1, prev_idx);
+      }
+      bit_num_B.add(prev_idx, -1); bit_num_B.add(y_idx, 1);
+      bit_sum_B.add(prev_idx, -prev); bit_sum_B.add(y_idx, y);
+    }
+    cout << ans << endl;
+  }
 
   return 0;
 };
