@@ -1,4 +1,4 @@
-#define LOCAL
+// #define LOCAL
 #ifdef LOCAL
 #define _GLIBCXX_DEBUG
 #endif
@@ -224,89 +224,17 @@ void init() {
   }
 };
 
-class ModMatrix {
-  public:
-  long long r, c;
-  vector<vector<mint>> mat;
-  ModMatrix() {}
-  ModMatrix(int r, int c, mint init=mint(0)): r(r), c(c) {
-    mat.resize(r);
-    for (int i=0; i<r; i++) mat[i].resize(c);
-    for (int i=0; i<r; i++) for (int j=0; j<c; j++) mat[i][j] = init;
-  }
-  void show() {
-    for (int i=0; i<r; i++) {
-      for (int j=0; j<c; j++) {
-        cout << mat[i][j]; if (j < c-1) cout << " ";
-      }
-      cout << endl;
+int modpow(int a, int b, int mod) {
+  int p = 1, q = a;
+  rep(i,0,63) {
+    if ((b>>i)&1) {
+      p *= q;
+      p %= mod;
     }
+    q *= q;
+    q %= mod;
   }
-  ModMatrix operator-() const {
-    ModMatrix ret = ModMatrix(r, c);
-    for (int i=0; i<r; i++) for (int j=0; j<c; j++) ret.mat[i][j] *= -1;
-    return ret;
-  }
-  ModMatrix& operator+=(const ModMatrix a) {
-    assert(r == a.r && c == a.c);
-    for (int i=0; i<r; i++) for (int j=0; j<c; j++) mat[i][j] += a.mat[i][j];
-    return *this;
-  }
-  ModMatrix& operator+=(const int n) {
-    for (int i=0; i<r; i++) for (int j=0; j<c; j++) mat[i][j] += n;
-    return *this;
-  }
-  ModMatrix& operator-=(const ModMatrix a) {
-    assert(r == a.r && c == a.c);
-    for (int i=0; i<r; i++) for (int j=0; j<c; j++) mat[i][j] -= a.mat[i][j];
-    return *this;
-  }
-  ModMatrix& operator-=(const long long n) {
-    for (int i=0; i<r; i++) for (int j=0; j<c; j++) mat[i][j] -= n;
-    return *this;
-  }
-  ModMatrix& operator*=(const ModMatrix a) {
-    assert(c == a.r);
-    ModMatrix ret = ModMatrix(r, a.c);
-    for (int i=0; i<r; i++) for (int k=0; k<c; k++) for (int j=0; j<a.c; j++) ret.mat[i][j] += (mat[i][k] * a.mat[k][j]);
-    *this = ret;
-    return *this;
-  }
-  ModMatrix& operator*=(const long long n) {
-    for (int i=0; i<r; i++) for (int j=0; j<c; j++) mat[i][j] *= n;
-    return *this;
-  }
-  ModMatrix operator+(const ModMatrix a) const {
-    assert(r == a.r && c == a.c);
-    return ModMatrix(*this) += a;
-  }
-  ModMatrix operator+(const long long n) const {
-    return ModMatrix(*this) += n;
-  }
-  ModMatrix operator-(const ModMatrix a) const {
-    assert(r == a.r && c == a.c);
-    return ModMatrix(*this) -= a;
-  }
-  ModMatrix operator-(const long long n) const {
-    return ModMatrix(*this) -= n;
-  }
-  ModMatrix operator*(const ModMatrix a) const {
-    return ModMatrix(*this) *= a;
-  }
-  ModMatrix operator*(const long long n) const {
-    return ModMatrix(*this) *= n;
-  }
-};
-
-ModMatrix POWMAT(ModMatrix a, long long n) {
-  assert(a.r == a.c);
-  ModMatrix ret = ModMatrix(a.r, a.r);
-  for (int i=0; i<a.r; i++) ret.mat[i][i] = mint(1ll);
-  while (n > 0) {
-    if (n & 1ll) ret *= a;
-    a *= a; n >>= 1;
-  }
-  return ret;
+  return p;
 };
 
 signed main() {
@@ -315,20 +243,46 @@ signed main() {
 
   int N, B, K; cin >> N >> B >> K;
   vi C(K); rep(i,0,K) cin >> C[i];
-  ModMatrix mat(B, B);
-  rep(i,0,B) {
-    rep(j,0,K) {
-      int c = C[j];
-      int re = (i*10+c)%B;
-      mat.mat[re][i] += 1;
+
+  vi power10(64); // 10^(2^i) mod B
+  rep(i,0,63) {
+    power10[i] = modpow(10, (1ll<<i), B);
+  }
+  vector<vector<mint>> DP(64, vector<mint> (1009)); // DP[i][j]: 2^i, remain = j
+
+  rep(i, 0, K) {
+    int c = C[i];
+    DP[0][C[i] % B] += 1;
+  }
+
+  rep(i, 0, 62) {
+    rep(j, 0, B) {
+      rep(k, 0, B) {
+        int nex = (j * power10[i] + k) % B;
+        DP[i+1][nex] += DP[i][j] * DP[i][k];
+      }
     }
   }
 
-  ModMatrix base(B, 1);
-  base.mat[0][0] = 1;
-  ModMatrix A = POWMAT(mat, N);
-  ModMatrix ans = A * base;
-  cout << ans.mat[0][0] << endl;
+  /*
+   繰り返し二乗法で答えを求める
+   */
+  vector<vector<mint>> ans(64, vector<mint> (1009));
+  ans[0][0] = 1;
+  rep(i,0,62) {
+    if ((N>>i)&1) {
+      rep(j,0,B) {
+        rep(k,0,B) {
+          int nex = (j * power10[i] + k) % B;
+          ans[i+1][nex] += ans[i][j] * DP[i][k];
+        }
+      }
+    } else {
+      rep(j,0,B) ans[i+1][j] = ans[i][j];
+    }
+  }
+
+  cout << ans[62][0] << endl;
 
   return 0;
 };

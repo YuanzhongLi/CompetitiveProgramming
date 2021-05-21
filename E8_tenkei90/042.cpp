@@ -1,4 +1,4 @@
-#define LOCAL
+// #define LOCAL
 #ifdef LOCAL
 #define _GLIBCXX_DEBUG
 #endif
@@ -203,6 +203,17 @@ class modint {
     }
     return res;
   }
+  friend constexpr modint modinv(const modint &rhs) noexcept {
+    i64 a_ = rhs.a, b = Modulus, u = 1, v = 0;
+    while(b){
+      i64 t = a_/b;
+      a_ -= t * b; swap(a_,b);
+      u -= t * v; swap(u,v);
+    }
+    u %= Modulus;
+    if(u < 0) u += Modulus;
+    return modint(u);
+  };
 };
 
 const long long MOD = 1e9+7;
@@ -215,120 +226,45 @@ std::istream &operator>>(std::istream &in, modint<MOD> &m) {
   long long a; in >> a; m = mint(a); return in;
 };
 
-mint fact[200005];
+mint fact[500005];
 
 void init() {
   fact[0] = mint(1);
-  for(int i = 1; i < 200005; i++) {
+  for(int i = 1; i < 500005; i++) {
     fact[i] = fact[i-1] * mint(i);
   }
 };
 
-class ModMatrix {
-  public:
-  long long r, c;
-  vector<vector<mint>> mat;
-  ModMatrix() {}
-  ModMatrix(int r, int c, mint init=mint(0)): r(r), c(c) {
-    mat.resize(r);
-    for (int i=0; i<r; i++) mat[i].resize(c);
-    for (int i=0; i<r; i++) for (int j=0; j<c; j++) mat[i][j] = init;
-  }
-  void show() {
-    for (int i=0; i<r; i++) {
-      for (int j=0; j<c; j++) {
-        cout << mat[i][j]; if (j < c-1) cout << " ";
-      }
-      cout << endl;
-    }
-  }
-  ModMatrix operator-() const {
-    ModMatrix ret = ModMatrix(r, c);
-    for (int i=0; i<r; i++) for (int j=0; j<c; j++) ret.mat[i][j] *= -1;
-    return ret;
-  }
-  ModMatrix& operator+=(const ModMatrix a) {
-    assert(r == a.r && c == a.c);
-    for (int i=0; i<r; i++) for (int j=0; j<c; j++) mat[i][j] += a.mat[i][j];
-    return *this;
-  }
-  ModMatrix& operator+=(const int n) {
-    for (int i=0; i<r; i++) for (int j=0; j<c; j++) mat[i][j] += n;
-    return *this;
-  }
-  ModMatrix& operator-=(const ModMatrix a) {
-    assert(r == a.r && c == a.c);
-    for (int i=0; i<r; i++) for (int j=0; j<c; j++) mat[i][j] -= a.mat[i][j];
-    return *this;
-  }
-  ModMatrix& operator-=(const long long n) {
-    for (int i=0; i<r; i++) for (int j=0; j<c; j++) mat[i][j] -= n;
-    return *this;
-  }
-  ModMatrix& operator*=(const ModMatrix a) {
-    assert(c == a.r);
-    ModMatrix ret = ModMatrix(r, a.c);
-    for (int i=0; i<r; i++) for (int k=0; k<c; k++) for (int j=0; j<a.c; j++) ret.mat[i][j] += (mat[i][k] * a.mat[k][j]);
-    *this = ret;
-    return *this;
-  }
-  ModMatrix& operator*=(const long long n) {
-    for (int i=0; i<r; i++) for (int j=0; j<c; j++) mat[i][j] *= n;
-    return *this;
-  }
-  ModMatrix operator+(const ModMatrix a) const {
-    assert(r == a.r && c == a.c);
-    return ModMatrix(*this) += a;
-  }
-  ModMatrix operator+(const long long n) const {
-    return ModMatrix(*this) += n;
-  }
-  ModMatrix operator-(const ModMatrix a) const {
-    assert(r == a.r && c == a.c);
-    return ModMatrix(*this) -= a;
-  }
-  ModMatrix operator-(const long long n) const {
-    return ModMatrix(*this) -= n;
-  }
-  ModMatrix operator*(const ModMatrix a) const {
-    return ModMatrix(*this) *= a;
-  }
-  ModMatrix operator*(const long long n) const {
-    return ModMatrix(*this) *= n;
-  }
+// calculate nCr mod
+mint modcomb(long long n, long long r) {
+  return fact[n] / fact[r] / fact[n - r];
 };
 
-ModMatrix POWMAT(ModMatrix a, long long n) {
-  assert(a.r == a.c);
-  ModMatrix ret = ModMatrix(a.r, a.r);
-  for (int i=0; i<a.r; i++) ret.mat[i][i] = mint(1ll);
-  while (n > 0) {
-    if (n & 1ll) ret *= a;
-    a *= a; n >>= 1;
-  }
-  return ret;
+// caluculate nPr mod
+mint modp(long long n, long long r) {
+  return fact[n]/fact[n-r];
 };
 
 signed main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
 
-  int N, B, K; cin >> N >> B >> K;
-  vi C(K); rep(i,0,K) cin >> C[i];
-  ModMatrix mat(B, B);
-  rep(i,0,B) {
-    rep(j,0,K) {
-      int c = C[j];
-      int re = (i*10+c)%B;
-      mat.mat[re][i] += 1;
+  int K; cin >> K;
+  if (K%9) {
+    cout << 0 << endl;
+    return 0;
+  }
+  vector<mint> dp(K+1);
+  dp[0] = mint(1);
+  rep(i,1,K+1) {
+    rep(j, 1, 10) {
+      if (i-j >= 0) {
+        dp[i] += dp[i-j];
+      }
     }
   }
 
-  ModMatrix base(B, 1);
-  base.mat[0][0] = 1;
-  ModMatrix A = POWMAT(mat, N);
-  ModMatrix ans = A * base;
-  cout << ans.mat[0][0] << endl;
+  cout << dp[K] << endl;
 
   return 0;
 };
