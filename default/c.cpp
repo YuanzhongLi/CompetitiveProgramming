@@ -54,6 +54,7 @@ string to_string(pair<A, B> p);
 string to_string(const string &s) {return '"' + s + '"';};
 string to_string(const char c) {return to_string((string) &c);};
 string to_string(bool b) {return (b ? "true" : "false");};
+// string to_string(mint m) {return to_string(m.a); };
 template <size_t N>
 string to_string(bitset<N> v){
   string res = "";
@@ -78,16 +79,17 @@ void debug_out() {cerr << endl;};
 template<typename Head, typename... Tail>
 void debug_out(Head H, Tail... T) { cerr << " " << to_string(H); debug_out(T...); };
 
-void LINE_OUT() {
-  cout << "--------------" << endl;
-};
+void LINE_OUT() { cout << "--------------" << endl; };
+void SPACE_OUT() { cout << endl; };
 
 #ifdef LOCAL
 #define debug(...) cerr << "[" << #__VA_ARGS__ << "]:", debug_out(__VA_ARGS__)
 #define LINE LINE_OUT();
+#define SPACE SPACE_OUT();
 #else
 #define debug(...) 71
 #define LINE 71;
+#define SPACE 71;
 #endif
 
 void print() { cout << endl; }
@@ -109,9 +111,7 @@ void print(vector<T> &vec) {
 
 template <class T>
 void print(vector<vector<T>> &df) {
-  for (auto& vec : df) {
-    print(vec);
-  }
+  for (auto& vec : df) { print(vec); }
 };
 
 signed main() {
