@@ -118,11 +118,26 @@ signed main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
 
-  string S; cin >> S;
-  int K; cin >> K;
-  int N = S.size();
-  string ans = "";
-  cout << ans << endl;
+  int N, M; cin >> N >> M;
+  vi L(M), R(M);
+  rep(i,0,M) cin >> L[i] >> R[i];
+  int tot = (M+1)*M/2ll;
+  int c1 = 0, c2 = 0, c3 = 0;
+  vi cnt1(N);
+  rep(i,0,M) {
+    int l = L[i], r = R[i];
+    cnt1[l-1]++;
+    cnt1[r-1]++;
+  }
+  rep(i,0,N) {
+    c1 += cnt1[i]*(cnt1[i]-1)/2;
+  }
+
+  vi su(M);
+  rep(i,0,M) {
+    int r = R[i];
+    su[r-1]++;
+  }
 
   return 0;
 };
