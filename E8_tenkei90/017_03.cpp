@@ -1,4 +1,4 @@
-#define LOCAL
+// #define LOCAL
 #ifdef LOCAL
 #define _GLIBCXX_DEBUG
 #endif
@@ -114,6 +114,72 @@ void print(vector<vector<T>> &df) {
   }
 };
 
+// 0-indexed
+template<typename T>
+class BIT {
+public:
+  int n;
+  vector<T> dat;
+
+  BIT(int n=0) {
+    init(n);
+  }
+
+  void init(int nin) {
+    n = nin;
+    dat.resize(n);
+    for (int i = 0; i < n; i++) dat[i] = 0;
+  }
+
+  // 0~iまでの和を求める
+  T sum(int i) {
+    T s = 0;
+    while (i >= 0) {
+      s += dat[i];
+      i = (i & (i+1)) - 1;
+    }
+    return s;
+  }
+
+  // [i, j]の和を求める
+  T sum_between(int i, int j){
+    if(i > j) return 0;
+    return sum(j) - sum(i-1);
+  }
+
+  // 一点更新
+  void add(int i, T x) {
+    while(i < n) {
+      dat[i] += x;
+      i |= i+1;
+    }
+  }
+
+  // a[0]+...+a[ret] >= x
+  int lower_bound(T x){
+    int ret = -1;
+    int k = 1;
+    while (2*k <= n) k <<= 1;
+    for( ;k>0; k>>=1){
+      if(ret+k < n && dat[ret+k] < x){
+        x -= dat[ret+k];
+        ret += k;
+      }
+    }
+    return ret + 1;
+  }
+
+  // debug
+  void show() {
+    #ifdef LOCAL
+    for (int i = 0; i < n; i++) cout << sum_between(i,i) << " ";
+    cout << endl;
+    #else
+    return;
+    #endif
+  }
+};
+
 signed main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
@@ -121,23 +187,48 @@ signed main() {
   int N, M; cin >> N >> M;
   vi L(M), R(M);
   rep(i,0,M) cin >> L[i] >> R[i];
-  int tot = (M+1)*M/2ll;
-  int c1 = 0, c2 = 0, c3 = 0;
+  int tot = (M)*(M-1)/2ll;
+
+  // c1: 交わる
+  int c1 = 0;
   vi cnt1(N);
   rep(i,0,M) {
     int l = L[i], r = R[i];
     cnt1[l-1]++;
     cnt1[r-1]++;
   }
-  rep(i,0,N) {
-    c1 += cnt1[i]*(cnt1[i]-1)/2;
-  }
+  rep(i,0,N) c1 += cnt1[i]*(cnt1[i]-1)/2;
 
-  vi su(M);
+  // c2: sr < tl
+  vi su(N+1);
   rep(i,0,M) {
     int r = R[i];
-    su[r-1]++;
+    su[r]++;
   }
+  rep(i,1,N+1) su[i] += su[i-1];
+
+  int c2 = 0;
+  rep(i,0,M) {
+    int l = L[i];
+    c2 += su[l-1];
+  }
+
+  // c3: sl < tl < tr < sr or tl < sl < sr < tr
+  BIT<int> bit(N+1); // lの数をカウントするためのbit
+  vpi v(M);
+  rep(i,0,M) {
+    v[i].second = L[i]; v[i].first = R[i];
+  }
+  sort(All(v));
+  int c3 = 0;
+  rep(i,0,M) {
+    int l = v[i].second, r = v[i].first;
+    c3 += bit.sum_between(l+1, N);
+    bit.add(l, 1);
+  }
+
+  int ans = tot - c1 - c2 - c3;
+  cout << ans << endl;
 
   return 0;
 };
