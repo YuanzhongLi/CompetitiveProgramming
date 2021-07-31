@@ -54,6 +54,7 @@ string to_string(pair<A, B> p);
 string to_string(const string &s) {return '"' + s + '"';};
 string to_string(const char c) {return to_string((string) &c);};
 string to_string(bool b) {return (b ? "true" : "false");};
+// string to_string(mint m) {return to_string(m.a); };
 template <size_t N>
 string to_string(bitset<N> v){
   string res = "";
@@ -78,16 +79,17 @@ void debug_out() {cerr << endl;};
 template<typename Head, typename... Tail>
 void debug_out(Head H, Tail... T) { cerr << " " << to_string(H); debug_out(T...); };
 
-void LINE_OUT() {
-  cout << "--------------" << endl;
-};
+void LINE_OUT() { cout << "--------------" << endl; };
+void SPACE_OUT() { cout << endl; };
 
 #ifdef LOCAL
 #define debug(...) cerr << "[" << #__VA_ARGS__ << "]:", debug_out(__VA_ARGS__)
 #define LINE LINE_OUT();
+#define SPACE SPACE_OUT();
 #else
 #define debug(...) 71
 #define LINE 71;
+#define SPACE 71;
 #endif
 
 void print() { cout << endl; }
@@ -109,39 +111,69 @@ void print(vector<T> &vec) {
 
 template <class T>
 void print(vector<vector<T>> &df) {
-  for (auto& vec : df) {
-    print(vec);
-  }
+  for (auto& vec : df) { print(vec); }
 };
+
+bool f(int mid, vi &T) {
+  int N = T.size();
+  int c1 = mid, c2 = mid;
+  bool ret = true;
+  rep(i,0,N) {
+    int t = T[i];
+    if (c1 >= t) {
+      c1 -= t;
+    } else if (c2 >= t) {
+      c2 -= t;
+    } else {
+      ret = false;
+      break;
+    }
+  }
+  return ret;
+};
+
+const int MAX = 1e5+5;
 
 signed main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
 
-  int N, M, D; cin >> N >> M >> D;
-  vi A(N); rep(i,0,N) A[i] = i;
-  rep(i,0,M) {
-    int a; cin >> a; a--;
-    swap(A[a],A[a+1]);
+  int N; cin >> N;
+  int tot = 0;
+  vi T(N); rep(i,0,N) { cin >> T[i]; tot += T[i]; }
+  debug(tot);
+  sort(All(T));
+
+  vector<vector<bool>> DP(N+1, vector<bool>(MAX, false));
+  rep(i,0,N) {
+    DP[i][0] = true;
   }
 
-  int log = 40;
-  vvi DP(log, vi(N));
-  rep(i,0,N) {
-    int a = A[i];
-    DP[0][a] = i;
-  }
-  rep(i,1,log) {
-    rep(j,0,N)  DP[i][j] =  DP[i-1][DP[i-1][j]];
-  }
-
-  rep(i,0,N) {
-    int ans = i;
-    rep(j,0,log) {
-      if ((D>>j)&1) ans = DP[j][ans];
+  rep(i,1,N+1) {
+    int t = T[i-1];
+    rep(j,0,MAX) {
+      if (DP[i-1][j]) {
+        DP[i][j+t] = true;
+        DP[i][j] = true;
+      }
     }
-    cout << ans + 1 << endl;
   }
+
+  // rep(i,0,N+1) {
+  //   rep(j,0,tot+1) cout << DP[i][j] << " ";
+  //   cout << endl;
+  // }
+
+  int ans = INF;
+  rep(i,0,MAX) {
+    if (DP[N][i]) {
+      chmin(ans, max(i, tot-i));
+    }
+  }
+
+  cout << ans << endl;
+
+
 
 
 

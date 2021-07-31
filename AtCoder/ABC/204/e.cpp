@@ -54,6 +54,7 @@ string to_string(pair<A, B> p);
 string to_string(const string &s) {return '"' + s + '"';};
 string to_string(const char c) {return to_string((string) &c);};
 string to_string(bool b) {return (b ? "true" : "false");};
+// string to_string(mint m) {return to_string(m.a); };
 template <size_t N>
 string to_string(bitset<N> v){
   string res = "";
@@ -78,16 +79,17 @@ void debug_out() {cerr << endl;};
 template<typename Head, typename... Tail>
 void debug_out(Head H, Tail... T) { cerr << " " << to_string(H); debug_out(T...); };
 
-void LINE_OUT() {
-  cout << "--------------" << endl;
-};
+void LINE_OUT() { cout << "--------------" << endl; };
+void SPACE_OUT() { cout << endl; };
 
 #ifdef LOCAL
 #define debug(...) cerr << "[" << #__VA_ARGS__ << "]:", debug_out(__VA_ARGS__)
 #define LINE LINE_OUT();
+#define SPACE SPACE_OUT();
 #else
 #define debug(...) 71
 #define LINE 71;
+#define SPACE 71;
 #endif
 
 void print() { cout << endl; }
@@ -109,41 +111,72 @@ void print(vector<T> &vec) {
 
 template <class T>
 void print(vector<vector<T>> &df) {
-  for (auto& vec : df) {
-    print(vec);
-  }
+  for (auto& vec : df) { print(vec); }
+};
+
+struct Edge {
+  int to, C, D;
+  ld p;
+};
+
+vi f(ld p) {
+  int pi = ceill(p);
+  vi ret;
+  int margin = 5;
+  for (int i = margin; i > 0; i--) ret.pb(pi-i);
+  rep(i,0,margin) ret.pb(pi+i);
+  return ret;
 };
 
 signed main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
 
-  int N, M, D; cin >> N >> M >> D;
-  vi A(N); rep(i,0,N) A[i] = i;
+  int N, M; cin >> N >> M;
+  vector<vector<Edge>> graph(N);
   rep(i,0,M) {
-    int a; cin >> a; a--;
-    swap(A[a],A[a+1]);
+    int a, b, c, d; cin >> a >> b >> c >> d; a--; b--;
+    ld p = sqrtl(d)-1.0;
+    graph[a].pb({b, c, d, p});
+    graph[b].pb({a, c, d, p});
   }
 
-  int log = 40;
-  vvi DP(log, vi(N));
-  rep(i,0,N) {
-    int a = A[i];
-    DP[0][a] = i;
-  }
-  rep(i,1,log) {
-    rep(j,0,N)  DP[i][j] =  DP[i-1][DP[i-1][j]];
-  }
+  priority_queue<PI> pq; // <cost, node>
 
-  rep(i,0,N) {
-    int ans = i;
-    rep(j,0,log) {
-      if ((D>>j)&1) ans = DP[j][ans];
+  vi dist(N, INF);
+  vector<bool> visited(N, false);
+
+  dist[0] = 0;
+  pq.push(make_pair(0, 0));
+
+  while (!pq.empty()) {
+    auto top = pq.top(); pq.pop();
+    int u = top.second;
+    if (visited[u]) continue;
+    visited[u] = true;
+
+    rep(i,0,graph[u].size()) {
+      auto e = graph[u][i];
+      int v = e.to;
+      if (visited[v]) continue;
+
+      int t = dist[u];
+      int mi = t + e.C + (e.D/(t+1));
+
+      vi alts = f(e.p);
+      int d = dist[u];
+      for (int alt: alts) {
+        if (alt >= t) chmin(mi, alt + e.C + (e.D/(alt+1)));
+      }
+
+      if (mi < dist[v]) {
+        dist[v] = mi;
+        pq.push(make_pair(-dist[v], v));
+      }
     }
-    cout << ans + 1 << endl;
   }
 
-
+  cout << (dist[N-1] == INF ? -1 : dist[N-1]) << endl;
 
   return 0;
 };

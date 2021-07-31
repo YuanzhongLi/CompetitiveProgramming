@@ -54,6 +54,7 @@ string to_string(pair<A, B> p);
 string to_string(const string &s) {return '"' + s + '"';};
 string to_string(const char c) {return to_string((string) &c);};
 string to_string(bool b) {return (b ? "true" : "false");};
+// string to_string(mint m) {return to_string(m.a); };
 template <size_t N>
 string to_string(bitset<N> v){
   string res = "";
@@ -78,16 +79,17 @@ void debug_out() {cerr << endl;};
 template<typename Head, typename... Tail>
 void debug_out(Head H, Tail... T) { cerr << " " << to_string(H); debug_out(T...); };
 
-void LINE_OUT() {
-  cout << "--------------" << endl;
-};
+void LINE_OUT() { cout << "--------------" << endl; };
+void SPACE_OUT() { cout << endl; };
 
 #ifdef LOCAL
 #define debug(...) cerr << "[" << #__VA_ARGS__ << "]:", debug_out(__VA_ARGS__)
 #define LINE LINE_OUT();
+#define SPACE SPACE_OUT();
 #else
 #define debug(...) 71
 #define LINE 71;
+#define SPACE 71;
 #endif
 
 void print() { cout << endl; }
@@ -109,41 +111,46 @@ void print(vector<T> &vec) {
 
 template <class T>
 void print(vector<vector<T>> &df) {
-  for (auto& vec : df) {
-    print(vec);
+  for (auto& vec : df) { print(vec); }
+};
+
+void reverse(int H, int W, vvi &A) {
+  rep(i,0,H) rep(j,0,W/2) swap(A[i][j], A[i][W-1-j]);
+};
+
+int solve(int H, int W, int C, vvi A) {
+  vvi dp(H, vi(W, INF));
+  rep(i,0,H) {
+    rep(j,0,W) {
+      chmin(dp[i][j], A[i][j]);
+      if (i) chmin(dp[i][j], dp[i-1][j]+C);
+      if (j) chmin(dp[i][j], dp[i][j-1]+C);
+    }
   }
+
+  int ans = INF;
+  rep(i,0,H) {
+    rep(j,0,W) {
+      if (i) chmin(ans, A[i][j]+dp[i-1][j]+C);
+      if (j) chmin(ans, A[i][j]+dp[i][j-1]+C);
+    }
+  }
+
+  return ans;
 };
 
 signed main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
 
-  int N, M, D; cin >> N >> M >> D;
-  vi A(N); rep(i,0,N) A[i] = i;
-  rep(i,0,M) {
-    int a; cin >> a; a--;
-    swap(A[a],A[a+1]);
-  }
+  int H, W, C; cin >> H >> W >> C;
+  vvi A(H, vi(W)); rep(i,0,H) rep(j,0,W) cin >> A[i][j];
 
-  int log = 40;
-  vvi DP(log, vi(N));
-  rep(i,0,N) {
-    int a = A[i];
-    DP[0][a] = i;
-  }
-  rep(i,1,log) {
-    rep(j,0,N)  DP[i][j] =  DP[i-1][DP[i-1][j]];
-  }
-
-  rep(i,0,N) {
-    int ans = i;
-    rep(j,0,log) {
-      if ((D>>j)&1) ans = DP[j][ans];
-    }
-    cout << ans + 1 << endl;
-  }
-
-
+  int ans = INF;
+  chmin(ans, solve(H, W, C, A));
+  reverse(H, W, A);
+  chmin(ans, solve(H, W, C, A));
+  cout << ans << endl;
 
   return 0;
 };
