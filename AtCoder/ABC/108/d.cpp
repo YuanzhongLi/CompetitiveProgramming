@@ -114,40 +114,44 @@ void print(vector<vector<T>> &df) {
   for (auto& vec : df) { print(vec); }
 };
 
+vi digit; // Lのbitが立っている位置
+int top(int x) {
+  int ret = 0;
+  while (x) {
+    ret++;
+    if (x&1) digit.pb(ret);
+    x >>= 1;
+  }
+  reverse(All(digit));
+  return ret;
+};
+
 signed main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
 
-  int N, M; cin >> N >> M;
-  vi A(M), C(M); rep(i,0,M) cin >> A[i] >> C[i];
-  unordered_map<int,int> dp;
-  unordered_set<int> used;
-  priority_queue<int> pq; // <n>
-  pq.push(N);
-  dp[N] = 0;
-  bool ok = false;
-  while (!pq.empty()) {
-    int n = pq.top(); pq.pop();
-    if (Find(used, n)) continue;
-    used.insert(n);
-    if (n == 1) {
-      ok = true;
-      break;
-    }
-    rep(i,0,M) {
-      int a = A[i], c = C[i];
-      int g = __gcd<int>(n, a);
-      if (Find(dp, g)) {
-        if (chmin(dp[g], dp[n]+c*(n-g))) pq.push(g);
-      } else {
-        dp[g] = dp[n]+c*(n-g);
-        pq.push(g);
-      }
-    }
+  int L; cin >> L;
+  int L_top = top(L);
+  int N = L_top;
+
+  vector<tuple<int,int,int>> edges;
+  rep(i,1,N) {
+    edges.pb(make_tuple(i,i+1,1<<(N-1-i)));
+    edges.pb(make_tuple(i,i+1,0));
   }
 
-  cout << (ok ? dp[1] : -1) << endl;
-
+  rep(i,0,digit.size()-1) {
+    int d = digit[i], nxt_d = digit[i+1];
+    int cost = (L>>(d-1))<<(d-1); // d桁より下を0でマスク
+    edges.pb(make_tuple(1,N+1-nxt_d, cost));
+  }
+  int M = edges.size();
+  cout << N << ' ' << M << endl;
+  rep(i,0,M) {
+    int a, b, c;
+    tie(a,b,c) = edges[i];
+    cout << a << ' ' << b << ' ' << c << endl;
+  }
 
   return 0;
 };

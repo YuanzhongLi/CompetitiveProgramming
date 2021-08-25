@@ -1,4 +1,4 @@
-// #define LOCAL
+#define LOCAL
 #ifdef LOCAL
 #define _GLIBCXX_DEBUG
 #endif
@@ -118,36 +118,23 @@ signed main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
 
-  int N, M; cin >> N >> M;
-  vi A(M), C(M); rep(i,0,M) cin >> A[i] >> C[i];
-  unordered_map<int,int> dp;
-  unordered_set<int> used;
-  priority_queue<int> pq; // <n>
-  pq.push(N);
-  dp[N] = 0;
-  bool ok = false;
-  while (!pq.empty()) {
-    int n = pq.top(); pq.pop();
-    if (Find(used, n)) continue;
-    used.insert(n);
-    if (n == 1) {
-      ok = true;
-      break;
-    }
-    rep(i,0,M) {
-      int a = A[i], c = C[i];
-      int g = __gcd<int>(n, a);
-      if (Find(dp, g)) {
-        if (chmin(dp[g], dp[n]+c*(n-g))) pq.push(g);
-      } else {
-        dp[g] = dp[n]+c*(n-g);
-        pq.push(g);
-      }
-    }
+  int N; cin >> N;
+  vi A(N); rep(i,0,N) cin >> A[i];
+  int odd = 0, even = 0, div4 = 0;
+  rep(i,0,N) {
+    int a = A[i];
+    if (a % 4 == 0) div4++;
+    else if (a % 2 == 0) even++;
+    else odd++;
   }
 
-  cout << (ok ? dp[1] : -1) << endl;
-
+  if (div4 >= odd) {
+    cout << "Yes" << endl;
+  } else if (div4+1 == odd) {
+    cout << (div4 + odd == N ? "Yes" : "No") << endl;
+  } else {
+    cout << "No" << endl;
+  }
 
   return 0;
 };

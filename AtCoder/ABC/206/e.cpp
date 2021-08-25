@@ -114,40 +114,142 @@ void print(vector<vector<T>> &df) {
   for (auto& vec : df) { print(vec); }
 };
 
-signed main() {
-  ios::sync_with_stdio(false);
-  cin.tie(0);
+const ll MAX = 1e6+5;
 
-  int N, M; cin >> N >> M;
-  vi A(M), C(M); rep(i,0,M) cin >> A[i] >> C[i];
-  unordered_map<int,int> dp;
-  unordered_set<int> used;
-  priority_queue<int> pq; // <n>
-  pq.push(N);
-  dp[N] = 0;
-  bool ok = false;
-  while (!pq.empty()) {
-    int n = pq.top(); pq.pop();
-    if (Find(used, n)) continue;
-    used.insert(n);
-    if (n == 1) {
-      ok = true;
-      break;
-    }
-    rep(i,0,M) {
-      int a = A[i], c = C[i];
-      int g = __gcd<int>(n, a);
-      if (Find(dp, g)) {
-        if (chmin(dp[g], dp[n]+c*(n-g))) pq.push(g);
-      } else {
-        dp[g] = dp[n]+c*(n-g);
-        pq.push(g);
+// エラトステネスの篩
+class Sieve {
+public:
+  ll n;
+  vl f, primes;
+  Sieve() {}
+  Sieve(ll n = 1): n(n), f(n+1) {
+    f[0] = f[1] = -1ll;
+    for (ll i = 2; i <= n; i++) {
+      if (f[i]) continue;
+      primes.pb(i);
+      f[i] = i;
+      for (ll j = i*i; j <= n; j += i) {
+        if (!f[j]) f[j] = i; // jの最小の素因数
       }
     }
   }
 
-  cout << (ok ? dp[1] : -1) << endl;
+  bool isPrime(int x) { return f[x] == x; }
 
+  // 素因数分解 (x > MAXの時MAX*MAXまで求められるO(1~MAXまでの素数の数))
+  vl factorList(ll x) {
+    if (x > MAX) {
+      vl res;
+      int idx = 0;
+      while (x > 1) {
+        ll p = primes[idx];
+        if (x % p == 0) {
+          x /= p;
+          res.pb(p);
+        } else {
+          idx++;
+        }
+        if (idx >= (int)primes.size()) break;
+      }
+
+      if (x > 1) res.pb(x);
+      return res;
+    } else {
+      vl res;
+      while (x != 1ll) {
+        res.pb(f[x]);
+        x /= f[x];
+      }
+      return res;
+    }
+  }
+
+  vpl factor(ll x) {
+    vl fl = factorList(x);
+    if (fl.size() == 0) return {};
+
+    vpl res(1, PLL(fl[0], 0));
+
+    for (int p: fl) {
+      if (res.back().first == p) {
+        res.back().second++;
+      } else {
+        res.emplace_back(p, 1);
+      }
+    }
+
+    return res;
+  }
+};
+
+int f(vi ps, int l, int r) {
+  int n = ps.size();
+  int ret = 0;
+  rep(i,0,1<<n) {
+    int cnt = 0;
+    int tmp = 1;
+    rep(j,0,n) {
+      if ((i>>j)&1) {
+        cnt++;
+        tmp *= ps[j];
+      }
+    }
+    int val1 = (l-1)/tmp, val2 = r/tmp;
+    if (cnt&1) ret -= (val2-val1);
+    else ret += (val2 -val1);
+  }
+  return ret;
+};
+
+signed main() {
+  ios::sync_with_stdio(false);
+  cin.tie(0);
+
+  Sieve si(MAX);
+  int L, R; cin >> L >> R;
+  function<int(int,int)> g1 = [&](int l, int r) {
+    int ret = 0;
+    rep(x, l, r+1) {
+      if (x == 1) {
+        ret += r-l+1;
+      } else {
+        auto fa = si.factor(x);
+        vi ps;
+        for (auto pi: fa) ps.pb(pi.first);
+        ret += f(ps, l, r);
+      }
+    }
+    return ret;
+  };
+
+  function<int(int,int)> gx = [&](int l, int r) { // = gy
+    int ret = 0;
+    rep(x, l, r+1) {
+      int val1 = (l-1)/x, val2 = r/x;
+      ret += (val2-val1);
+    }
+    return ret;
+  };
+
+  function<int(int,int)> g1_gx = [&](int l, int r) { // = g1_gy
+    int ret = 0;
+    if (l == 1) ret = r;
+    return ret;
+  };
+
+  function<int(int,int)> gx_gy = [&](int l, int r)  {
+    return r-l+1;
+  };
+
+  function<int(int,int)> g1_gx_gy = [&](int l, int r) {
+    if (l == 1) return 1;
+    else return 0;
+  };
+
+  int val1 = g1(L, R) + gx(L, R) + gx(L, R) - g1_gx(L, R) - g1_gx(L,R) - gx_gy(L, R) + g1_gx_gy(L, R);
+  int val2 = (R-L+1)*(R-L+1);
+
+  cout << val2 - val1 << endl;
 
   return 0;
 };

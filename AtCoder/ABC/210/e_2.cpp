@@ -1,4 +1,4 @@
-// #define LOCAL
+#define LOCAL
 #ifdef LOCAL
 #define _GLIBCXX_DEBUG
 #endif
@@ -119,34 +119,17 @@ signed main() {
   cin.tie(0);
 
   int N, M; cin >> N >> M;
-  vi A(M), C(M); rep(i,0,M) cin >> A[i] >> C[i];
-  unordered_map<int,int> dp;
-  unordered_set<int> used;
-  priority_queue<int> pq; // <n>
-  pq.push(N);
-  dp[N] = 0;
-  bool ok = false;
-  while (!pq.empty()) {
-    int n = pq.top(); pq.pop();
-    if (Find(used, n)) continue;
-    used.insert(n);
-    if (n == 1) {
-      ok = true;
-      break;
-    }
-    rep(i,0,M) {
-      int a = A[i], c = C[i];
-      int g = __gcd<int>(n, a);
-      if (Find(dp, g)) {
-        if (chmin(dp[g], dp[n]+c*(n-g))) pq.push(g);
-      } else {
-        dp[g] = dp[n]+c*(n-g);
-        pq.push(g);
-      }
-    }
+  vpi AC(M); rep(i,0,M) cin >> AC[i].second >> AC[i].first;
+  sort(All(AC));
+  int n = N;
+  int ans = 0;
+  rep(i,0,M) {
+    int a = AC[i].second, c = AC[i].first;
+    int g = __gcd<int> (n, a);
+    ans += c*(n-g);
+    n = g;
   }
-
-  cout << (ok ? dp[1] : -1) << endl;
+  cout << (n == 1 ? ans : -1) << endl;
 
 
   return 0;

@@ -1,4 +1,4 @@
-// #define LOCAL
+#define LOCAL
 #ifdef LOCAL
 #define _GLIBCXX_DEBUG
 #endif
@@ -117,37 +117,21 @@ void print(vector<vector<T>> &df) {
 signed main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
-
-  int N, M; cin >> N >> M;
-  vi A(M), C(M); rep(i,0,M) cin >> A[i] >> C[i];
-  unordered_map<int,int> dp;
-  unordered_set<int> used;
-  priority_queue<int> pq; // <n>
-  pq.push(N);
-  dp[N] = 0;
-  bool ok = false;
-  while (!pq.empty()) {
-    int n = pq.top(); pq.pop();
-    if (Find(used, n)) continue;
-    used.insert(n);
-    if (n == 1) {
-      ok = true;
-      break;
-    }
-    rep(i,0,M) {
-      int a = A[i], c = C[i];
-      int g = __gcd<int>(n, a);
-      if (Find(dp, g)) {
-        if (chmin(dp[g], dp[n]+c*(n-g))) pq.push(g);
-      } else {
-        dp[g] = dp[n]+c*(n-g);
-        pq.push(g);
+  string S; cin >> S;
+  int N = S.size();
+  int ans = 0;
+  vi cnt(26);
+  rep(i,0,N-1) {
+    if (i&1) {
+      bool ok = true;
+      rep(j,0,(i+1)/2) {
+        ok &= (S[j] == S[(i+1)/2+j]);
       }
+      if (ok) ans = i+1;
     }
   }
 
-  cout << (ok ? dp[1] : -1) << endl;
-
+  cout << ans << endl;
 
   return 0;
 };

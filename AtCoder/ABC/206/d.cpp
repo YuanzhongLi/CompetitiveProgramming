@@ -114,40 +114,86 @@ void print(vector<vector<T>> &df) {
   for (auto& vec : df) { print(vec); }
 };
 
-signed main() {
-  ios::sync_with_stdio(false);
-  cin.tie(0);
-
-  int N, M; cin >> N >> M;
-  vi A(M), C(M); rep(i,0,M) cin >> A[i] >> C[i];
-  unordered_map<int,int> dp;
-  unordered_set<int> used;
-  priority_queue<int> pq; // <n>
-  pq.push(N);
-  dp[N] = 0;
-  bool ok = false;
-  while (!pq.empty()) {
-    int n = pq.top(); pq.pop();
-    if (Find(used, n)) continue;
-    used.insert(n);
-    if (n == 1) {
-      ok = true;
-      break;
+class Unionfind {
+public:
+  int N;
+  vector<int> par; // parent
+  vector<int> rank; // tree hight
+  vector<int> size; // root node numbers
+  int treeNum; // tree number
+  Unionfind(int N) : N(N), par(N), rank(N, 0), size(N, 1) {
+    for (int i = 0; i < N; i++) {
+      par[i] = i;
     }
-    rep(i,0,M) {
-      int a = A[i], c = C[i];
-      int g = __gcd<int>(n, a);
-      if (Find(dp, g)) {
-        if (chmin(dp[g], dp[n]+c*(n-g))) pq.push(g);
-      } else {
-        dp[g] = dp[n]+c*(n-g);
-        pq.push(g);
+    treeNum = N;
+  }
+  // add node
+  void addNode() {
+    par.push_back(N);
+    rank.push_back(0);
+    size.push_back(1);
+    N++;
+    treeNum++;
+  }
+  int root(int x) {
+    return par[x] == x ? x : par[x] = root(par[x]);
+  }
+  bool same(int x, int y) {
+    return root(x) == root(y);
+  }
+  void unite(int x, int y) {
+    x = root(x);
+    y = root(y);
+    if (x == y) {
+      return;
+    }
+    treeNum--;
+    if (rank[x] < rank[y]) {
+      par[x] = y;
+      size[y] += size[x];
+    } else {
+      par[y] = x;
+      size[x] += size[y];
+      if (rank[x] == rank[y]) {
+        rank[x] += 1;
       }
     }
   }
 
-  cout << (ok ? dp[1] : -1) << endl;
+  vector<vector<int>> group() { // O(N)
+    vector<vector<int>> res;
+    vector<vector<int>> table(N);
+    for (int i = 0; i < N; i++) {
+      table[root(i)].push_back(i);
+    }
+    for (int i = 0; i < N; i++) {
+      if (!table[i].empty()) {
+        res.push_back(table[i]);
+      }
+    }
+    return res;
+  }
+};
 
+signed main() {
+  ios::sync_with_stdio(false);
+  cin.tie(0);
+
+  int N; cin >> N;
+  vi A(N); rep(i,0,N) cin >> A[i];
+  int MAX = 200005;
+  Unionfind uf(MAX);
+  int ans = 0;
+  rep(i,0,N/2) {
+    int a = A[i], b = A[N-1-i];
+    if (uf.same(a, b)) continue;
+    else {
+      ans++;
+      uf.unite(a, b);
+    }
+  }
+
+  cout << ans << endl;
 
   return 0;
 };

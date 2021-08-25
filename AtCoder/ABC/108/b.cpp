@@ -1,4 +1,4 @@
-// #define LOCAL
+#define LOCAL
 #ifdef LOCAL
 #define _GLIBCXX_DEBUG
 #endif
@@ -118,36 +118,11 @@ signed main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
 
-  int N, M; cin >> N >> M;
-  vi A(M), C(M); rep(i,0,M) cin >> A[i] >> C[i];
-  unordered_map<int,int> dp;
-  unordered_set<int> used;
-  priority_queue<int> pq; // <n>
-  pq.push(N);
-  dp[N] = 0;
-  bool ok = false;
-  while (!pq.empty()) {
-    int n = pq.top(); pq.pop();
-    if (Find(used, n)) continue;
-    used.insert(n);
-    if (n == 1) {
-      ok = true;
-      break;
-    }
-    rep(i,0,M) {
-      int a = A[i], c = C[i];
-      int g = __gcd<int>(n, a);
-      if (Find(dp, g)) {
-        if (chmin(dp[g], dp[n]+c*(n-g))) pq.push(g);
-      } else {
-        dp[g] = dp[n]+c*(n-g);
-        pq.push(g);
-      }
-    }
-  }
-
-  cout << (ok ? dp[1] : -1) << endl;
-
+  int x1, y1, x2, y2; cin >> x1 >> y1 >> x2 >> y2;
+  int vec1_x = x1-x2, vec1_y = y1-y2, vec2_x = x2-x1, vec2_y = y2-y1;
+  int x3 = x2 + vec1_y, y3 = y2 - vec1_x;
+  int x4 = x1 - vec2_y, y4 = y1 + vec2_x;
+  cout << x3 << ' ' << y3 << ' ' << x4 << ' ' << y4 << endl;
 
   return 0;
 };

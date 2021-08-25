@@ -118,36 +118,35 @@ signed main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
 
-  int N, M; cin >> N >> M;
-  vi A(M), C(M); rep(i,0,M) cin >> A[i] >> C[i];
-  unordered_map<int,int> dp;
-  unordered_set<int> used;
-  priority_queue<int> pq; // <n>
-  pq.push(N);
-  dp[N] = 0;
-  bool ok = false;
-  while (!pq.empty()) {
-    int n = pq.top(); pq.pop();
-    if (Find(used, n)) continue;
-    used.insert(n);
-    if (n == 1) {
-      ok = true;
-      break;
-    }
-    rep(i,0,M) {
-      int a = A[i], c = C[i];
-      int g = __gcd<int>(n, a);
-      if (Find(dp, g)) {
-        if (chmin(dp[g], dp[n]+c*(n-g))) pq.push(g);
-      } else {
-        dp[g] = dp[n]+c*(n-g);
-        pq.push(g);
-      }
+  int H, W; cin >> H >> W;
+  int N; cin >> N;
+  vi A(N); rep(i,0,N) cin >> A[i];
+  vi colors(H*W);
+  rep(i,0,H*W) {
+    colors[i] = A.size();
+    A.back()--;
+    if (A.back() == 0) A.pop_back();
+  }
+
+  debug(colors);
+
+  vvi ans(H, vi(W));
+
+  rep(i,0,H) {
+    rep(j,0,W) {
+      if (i&1) ans[i][W-1-j] = colors.back();
+      else ans[i][j] = colors.back();
+      colors.pop_back();
     }
   }
 
-  cout << (ok ? dp[1] : -1) << endl;
-
+  rep(i,0,H) {
+    rep(j,0,W) {
+      cout << ans[i][j];
+      if (j < W-1) cout << ' ';
+    }
+    cout << endl;
+  }
 
   return 0;
 };
